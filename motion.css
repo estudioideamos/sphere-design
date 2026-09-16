@@ -58,3 +58,9 @@ footer a{transition:color .3s}footer a:hover{color:var(--accent)}.team-grid img{
 @media(max-width:700px){.marquee-topline{font-size:7px;letter-spacing:.1em}.marquee-toggle{font-size:9px;gap:5px}.marquee-ribbon{padding-bottom:20px}.marquee-ribbon .marquee-group{gap:30px;padding-right:30px}.marquee-ribbon .marquee-group>span{font-size:10px;letter-spacing:.16em}.marquee-ribbon .marquee-group>b{font-size:18px}.marquee-statement{padding-bottom:45px;margin-top:-5px}.marquee-statement .marquee-topline{padding-bottom:22px}.marquee-phrase,.marquee-outline{font-size:72px}.marquee-statement .marquee-group{gap:30px;padding-right:30px}.marquee-medallion{font-size:48px}.marquee-image{width:90px;height:60px}.marquee-secondary{margin-top:20px;padding-block:13px}.marquee-secondary .marquee-group{gap:25px;padding-right:25px}.marquee-secondary span{font-size:8px}.marquee-statement .marquee-track{animation-duration:55s}.cinema-frame:after{inset:10px}.closing:before{display:none}}
 @media(prefers-reduced-motion:reduce){.marquee-track{animation:none!important;transform:none!important}.marquee-toggle{display:none}.marquee-statement .marquee-image img{transform:none}.closing:before{display:none}.marquee-ribbon .marquee-group:first-child{gap:22px;padding-inline:20px;justify-content:center;flex-wrap:wrap;width:100vw}.marquee-ribbon .marquee-group:nth-child(2){display:none}}
 .marquee-group{min-width:100vw;justify-content:space-around}
+/* A distinct editorial band separates the film from the studio introduction. */
+.marquee-ribbon{background:#c5c9a9;color:#20241c;border-block:1px solid #a8af8c}
+.marquee-ribbon .marquee-topline,.marquee-ribbon .marquee-toggle{color:#424a35}
+.marquee-ribbon .marquee-toggle:hover,.marquee-ribbon .marquee-toggle[aria-pressed=true]{color:#171c12}
+.marquee-ribbon .marquee-group>b{color:#53613b}
+.marquee-ribbon button:focus-visible{outline-color:#20241c}
