@@ -122,3 +122,6 @@ footer a{transition:color .3s}footer a:hover{color:var(--accent)}.team-grid img{
  .studio-credit>a{justify-content:center;gap:15px;padding-block:10px}
  .studio-credit img{width:100px}
 }
+/* Preserve the containing block for the service crossfade on stacked layouts. */
+.adaptive-columns>.service-visual:not(.sticky-column){position:relative;top:0}
+@media(max-width:1050px){.adaptive-columns>.service-visual{position:relative;top:0}}
