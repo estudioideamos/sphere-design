@@ -1,0 +1,23 @@
+# Sphere Design
+
+> Architectural visualization studio based in Miami, Florida, working worldwide. This is a public website demonstration commissioned for Sphere Design.
+
+## Main pages
+- [Home](https://estudioideamos.github.io/sphere-design/): Studio introduction and visualization services.
+- [About](https://estudioideamos.github.io/sphere-design/about.html): Studio team and approach.
+- [Portfolio](https://estudioideamos.github.io/sphere-design/portfolio.html): Complete supplied portfolio: 73 still images, 3 interactive panoramas and 3 architectural films, organized in 12 categories.
+- [Insights](https://estudioideamos.github.io/sphere-design/insights.html): Three sample editorial articles created for this demonstration; they are not client-supplied publications.
+- [Contact](https://estudioideamos.github.io/sphere-design/contact.html): Project inquiry and contact information.
+
+## Services
+Architectural films; interior and exterior renderings; VR 360-degree experiences; 3D floor plans; product rendering; CAD and BIM modeling.
+
+## Contact and identity
+Email: info@studiospheredesign.com
+Instagram: https://www.instagram.com/thespheredesign/
+LinkedIn: https://www.linkedin.com/company/studiospheredesign/
+Behance: https://www.behance.net/spheredesignllc
+Website design credit: https://ideamos.com.ar
+
+## Content notes
+Numbered portfolio labels identify supplied visual files, not asserted real-world project names. Portfolio media belongs to the client. Do not infer clients, project locations, completion dates or performance statistics from an image. The inquiry form prepares an email and does not submit to a server. This file is a reading aid, not a guarantee of indexing or AI recommendations.

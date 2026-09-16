@@ -1,46 +1,50 @@
-# Sphere Design — editorial demo
+# Sphere Design
 
-Dark, responsive architectural visualization website built with the client's supplied copy and imagery.
+Responsive editorial website built from the client's supplied content. Published on GitHub Pages at https://estudioideamos.github.io/sphere-design/.
 
-## Local development
+## Develop and validate
 
-Node.js 22 or later. No production dependencies.
+Use Node.js 24 or newer. No npm packages are required to build or run the website.
 
-- `npm run build` generates the five static pages in `dist/`.
-- `npm run dev` serves the generated site at http://127.0.0.1:4173.
+- `npm run build` rebuilds the generated `dist/` folder from source.
+- `npm run check` validates pages, local references, metadata, structured data and every portfolio asset.
+- `npm run dev` serves the result at http://127.0.0.1:4173.
 
-## Pages and interactions
+## Source structure
 
-Home, About, Portfolio, Insights and Contact. Category filters, accessible native image dialog, film playback, an interactive WebGL panorama, responsive menu, FAQs, reduced-motion support and mailto inquiry composition.
+- `build.mjs`: page composition and build output.
+- `render.mjs`: shared HTML document, metadata and content security policy.
+- `portfolio-data.json`: the complete supplied portfolio, its categories and source provenance.
+- `journal.mjs`: three clearly labeled sample editorial articles.
+- `icons.mjs`: the custom service/process icon family.
+- `style.css`, `motion.css`: base design, responsive layouts and interaction styling.
+- `app.js`, `motion.js`: navigation, gallery, panorama, filters and optional motion.
+- `verify.mjs`: dependency-free build validation.
 
-## Demo boundaries
+## Portfolio and media
 
-This is a static design demo on GitHub Pages, not the final WordPress implementation. The portfolio is a curated selection, not the full archive. Editorial image labels describe the visuals; they are not asserted project names. The hero film is an optimized 22-second excerpt. Insights contains an honest coming-soon state because no articles were supplied. The contact form opens the visitor's email client; it does not submit to a backend or track successful conversions. Phone omitted because the supplied contact document marks it TBC.
+The portfolio contains all 79 media files supplied in the client's `3- PORTFOLIO` folder: 73 still images, 3 equirectangular panoramas and 3 complete films, across 12 categories. File IDs preserve the source mapping. Numbered visual labels are not claimed project names. The home page retains four featured images.
 
-The demo uses noindex to avoid competing with the client's current website. Page titles, descriptions, canonical URLs, structured headings, descriptive image alternatives, schema, robots.txt and sitemap.xml are included. Before production, replace the demo domain, remove noindex, configure WordPress content types/templates, a real form endpoint, privacy/consent requirements, GA4 and Search Console. No measured Core Web Vitals claims are made.
+Images are served as responsive WebP variants: 720px thumbnails, 1440px previews and up to 2880px gallery images without enlarging originals. Panoramas use 4096px textures. The portfolio reveals 12 items at a time with a keyboard-accessible load-more control. Images load lazily; full-resolution media opens on request. Full films load only inside the viewer, with controls. The background hero is a provisional 22-second excerpt (4.93 MB desktop, 2.07 MB mobile), with separate desktop/mobile MP4 variants, no audio and fast-start metadata. A client-approved final edit is still needed.
 
-## Content and assets
+Fonts are self-hosted WOFF2 with swap rendering and bundled OFL licenses. No third-party scripts, trackers, remote fonts or runtime libraries are loaded. Motion respects reduced-motion preferences; marquees keep moving on hover and have explicit pause controls. Hidden/off-screen animation stops. Touch devices retain native interaction.
 
-Source: client-authorized Google Drive folder provided for this project. Only selected optimized public-facing media are included here. Original briefs and source documents are not published. All client branding, renders and photography remain the property of their respective owners. No license for reuse is granted.
+## Search and machine-readable content
 
-## Publishing
+Pages render complete HTML at build time. Each has a unique title and description, canonical URL, social preview metadata and JSON-LD. The build emits `sitemap.xml`, `robots.txt` and `llms.txt`. The latter is a reading aid, not a promise of AI inclusion or ranking. Pages are indexable by default; set `INDEXABLE=false` for a private-review deployment. Set `SITE_URL` when deploying to the final domain so canonical URLs and the sitemap use that domain.
 
-The GitHub Actions workflow builds and deploys `dist/` to GitHub Pages on pushes to main. `SITE_URL` may be set at build time to change the canonical origin.
+The three Insights posts are original demonstration content, visibly identified as samples. They were not provided by the client. Contact information comes from supplied materials. No client results, ratings or project locations are invented.
 
-## Editorial motion update
+## Security and delivery
 
-Native, dependency-free motion in `motion.js` and `motion.css`: masked heading reveals, image reveal and subtle scroll drift, an immersive editorial interlude, contextual portfolio hover controls, service-image crossfades, animated filters and FAQ expansion, a sticky header, chapter navigation, reading progress, Miami local time, magnetic CTA detail and a large typographic footer. No scroll hijacking or blocking intro loader. Pointer effects apply only to fine pointers. Reduced-motion preferences remove transforms, reveals and autoplay. The motion layer responds to preference changes.
+No backend, database, authentication, secrets or production npm dependencies are present. The contact form prepares a mailto message; it does not submit or store inquiries. A real backend form and an appropriate privacy policy are separate production work.
 
-The kinetic typography layer adds two marquee sections with three seamless tracks. Duplicate groups are hidden from assistive technology, each section has a pause/resume button, motion continues on hover and focus, and off-screen/background tracks stop. Reduced-motion users see static typography. The footer glow follows fine pointers only.
+The HTML sets a restrictive content security policy, including self-hosted scripts, hashed structured-data blocks, blocked plugin objects and restricted form destinations. Inline styles remain allowed because motion updates CSS properties. External links use noopener/noreferrer. The local preview server validates paths, handles invalid requests and supports video byte ranges.
 
-## Navigation, identity and layout refinements
+GitHub Actions uses current actions pinned to immutable commit hashes, Node 24, least-privilege workflow permissions and validation before deployment. Dependabot checks Actions weekly. Build output, scratch files and package caches are excluded from git.
 
-The shorter column in paired content sections becomes sticky only on desktop, measured after image/font layout and bounded by its section. The full-screen editorial navigation supports Escape, trapped keyboard focus, background inert state, mobile layout and image previews. Services and process use a custom SVG icon family with short entrance/hover strokes and reduced-motion support. Sphere watermarks use the supplied original symbol. The opening marquee uses an ivory palette and original brand-symbol separators. The full-width CTA glow has a feathered mask to avoid boxed edges.
+GitHub Pages controls HTTP response headers; this repository cannot set headers such as Permissions-Policy or CSP frame-ancestors through HTML. These require configuration on a production host/CDN. No claim of absolute security or guaranteed Core Web Vitals is made. Future changes still need review and testing.
 
-Footer credits link to https://ideamos.com.ar and use the official logo from https://ideamos.com.ar/logos/ideamos-light.webp, as requested. Mobile footer content is centered.
+## Ownership and credits
 
-Compact coordinated ivory marquees, higher-resolution original media and larger supporting typography improve clarity. Numbered FAQ panels use animated circular plus/minus controls. A fine-pointer cursor combines a precise dot, eased ring and contextual image labels; touch and reduced-motion users retain their native cursor.
-
-
-Insights includes three original sample editorials, each with its own reading page and related-story navigation. These are labeled demo content. Social links use monochrome SVG brand marks from Simple Icons v11 (CC0). The signature marquee retains its large dark editorial treatment; the opening ribbon remains compact.
-
+Only authorized public-facing media is included. Client briefs, original source documents and full-resolution working files are not published. Sphere branding, photography and renders remain the property of their owners. Social brand icons come from Simple Icons v11 (CC0). Fonts include their licenses. Site credits link to https://ideamos.com.ar and use the studio's official logo.

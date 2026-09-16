@@ -1,32 +1,387 @@
-const reduce=matchMedia('(prefers-reduced-motion: reduce)');
-const menu=document.querySelector('.menu-toggle'),nav=document.querySelector('#navigation');
-const menuBackground=[...document.querySelectorAll('main,footer,.header-links,.header-cta,.site-header>.brand')];
-function closeMenu(){
- if(menu.getAttribute('aria-expanded')!=='true')return;
- menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','Open navigation');menu.querySelector('.menu-word').textContent='Menu';nav.classList.remove('open');nav.setAttribute('aria-hidden','true');nav.inert=true;document.body.classList.remove('menu-open');if(!document.querySelector('dialog[open]'))document.body.classList.remove('locked');menuBackground.forEach(el=>el.inert=false);menu.focus({preventScroll:true});
+const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+const menu = document.querySelector(".menu-toggle"),
+  nav = document.querySelector("#navigation");
+const menuBackground = [
+  ...document.querySelectorAll(
+    "main,footer,.header-links,.header-cta,.site-header>.brand",
+  ),
+];
+function closeMenu() {
+  if (menu.getAttribute("aria-expanded") !== "true") return;
+  menu.setAttribute("aria-expanded", "false");
+  menu.setAttribute("aria-label", "Open navigation");
+  menu.querySelector(".menu-word").textContent = "Menu";
+  nav.classList.remove("open");
+  nav.setAttribute("aria-hidden", "true");
+  nav.inert = true;
+  document.body.classList.remove("menu-open");
+  if (!document.querySelector("dialog[open]"))
+    document.body.classList.remove("locked");
+  menuBackground.forEach((el) => (el.inert = false));
+  menu.focus({ preventScroll: true });
 }
-menu.addEventListener('click',()=>{
- if(menu.getAttribute('aria-expanded')==='true'){closeMenu();return;}
- menu.setAttribute('aria-expanded','true');menu.setAttribute('aria-label','Close navigation');menu.querySelector('.menu-word').textContent='Close';nav.inert=false;nav.setAttribute('aria-hidden','false');nav.classList.add('open');document.body.classList.add('locked','menu-open');menuBackground.forEach(el=>el.inert=true);nav.querySelector('.menu-links a').focus({preventScroll:true});
+menu.addEventListener("click", () => {
+  if (menu.getAttribute("aria-expanded") === "true") {
+    closeMenu();
+    return;
+  }
+  menu.setAttribute("aria-expanded", "true");
+  menu.setAttribute("aria-label", "Close navigation");
+  menu.querySelector(".menu-word").textContent = "Close";
+  nav.inert = false;
+  nav.setAttribute("aria-hidden", "false");
+  nav.classList.add("open");
+  document.body.classList.add("locked", "menu-open");
+  menuBackground.forEach((el) => (el.inert = true));
+  nav.querySelector(".menu-links a").focus({ preventScroll: true });
 });
-document.addEventListener('keydown',e=>{
- if(!nav.classList.contains('open'))return;
- if(e.key==='Escape'){e.preventDefault();closeMenu();}
- if(e.key==='Tab'){const links=[...nav.querySelectorAll('a'),menu];if(e.shiftKey&&document.activeElement===links[0]){e.preventDefault();menu.focus()}else if(!e.shiftKey&&document.activeElement===menu){e.preventDefault();links[0].focus()}else if(!e.shiftKey&&document.activeElement===links[links.length-2]){e.preventDefault();menu.focus()}else if(e.shiftKey&&document.activeElement===menu){e.preventDefault();links[links.length-2].focus()}}
+document.addEventListener("keydown", (e) => {
+  if (!nav.classList.contains("open")) return;
+  if (e.key === "Escape") {
+    e.preventDefault();
+    closeMenu();
+  }
+  if (e.key === "Tab") {
+    const links = [...nav.querySelectorAll("a"), menu];
+    if (e.shiftKey && document.activeElement === links[0]) {
+      e.preventDefault();
+      menu.focus();
+    } else if (!e.shiftKey && document.activeElement === menu) {
+      e.preventDefault();
+      links[0].focus();
+    } else if (
+      !e.shiftKey &&
+      document.activeElement === links[links.length - 2]
+    ) {
+      e.preventDefault();
+      menu.focus();
+    } else if (e.shiftKey && document.activeElement === menu) {
+      e.preventDefault();
+      links[links.length - 2].focus();
+    }
+  }
 });
-nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));
-addEventListener('pageshow',closeMenu);
-const hero=document.querySelector('#hero-video'),film=document.querySelector('.film-control');
-if(hero){const loadFilm=()=>{const s=hero.querySelector('source');if(!s.src){s.src=s.dataset.src;hero.load()}};function state(){film.innerHTML=hero.paused?'<svg class="playback-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 3.5 12 8l-7 4.5Z"/></svg> <span>Play film</span>':'<svg class="playback-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="4" y="3" width="2.5" height="10" rx=".5"/><rect x="9.5" y="3" width="2.5" height="10" rx=".5"/></svg> <span>Pause film</span>';film.setAttribute('aria-label',hero.paused?'Play background film':'Pause background film')};film.addEventListener('click',()=>{loadFilm();if(hero.paused)hero.play().catch(()=>{});else hero.pause()});hero.addEventListener('play',state);hero.addEventListener('pause',state);if(!reduce.matches&&!navigator.connection?.saveData){window.addEventListener('load',()=>{setTimeout(()=>{loadFilm();hero.play().catch(state)},500)})}document.addEventListener('visibilitychange',()=>{if(document.hidden)hero.pause()});new IntersectionObserver(([entry])=>{if(!entry.isIntersecting)hero.pause()}).observe(hero)}
-const filterButtons=[...document.querySelectorAll('[data-filter]')],cards=[...document.querySelectorAll('[data-project]')];
-function filter(category){if(!filterButtons.some(b=>b.dataset.filter===category))category='All';filterButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter===category)));cards.forEach(c=>{c.hidden=category!=='All'&&c.dataset.category!==category;c.classList.add('visible')});const count=cards.filter(c=>!c.hidden).length;document.querySelector('.result-count').textContent=count+' visual experience'+(count===1?'':'s');const url=new URL(location.href);if(category==='All')url.searchParams.delete('category');else url.searchParams.set('category',category);history.replaceState(null,'',url)}
-filterButtons.forEach(b=>b.addEventListener('click',()=>filter(b.dataset.filter)));if(filterButtons.length)filter(new URLSearchParams(location.search).get('category')||'All');
-const dialog=document.querySelector('.lightbox'),media=dialog.querySelector('.modal-media'),caption=dialog.querySelector('.modal-caption p');let dataPromise,current=0,opener,dispose;
-function dataset(){return dataPromise??=fetch('assets/projects.json').then(r=>{if(!r.ok)throw Error('Portfolio unavailable');return r.json()})}
-function clean(){if(dispose){dispose();dispose=null}media.querySelector('video')?.pause();media.replaceChildren()}
-async function show(index){current=index;clean();caption.textContent='Loading…';try{const all=await dataset(),p=all[index];caption.textContent=p[2]+' — '+p[1];if(p[1]==='Animations'){const v=document.createElement('video');v.src='assets/hero.mp4';v.controls=true;v.playsInline=true;v.poster='assets/hero-poster.jpg';media.append(v);v.play().catch(()=>{})}else if(p[1]==='VR 360°'){dispose=panorama(media,'assets/vr.webp')}else{const img=new Image();img.src='assets/'+p[0]+'.webp';img.alt=p[3];media.append(img)}}catch{caption.textContent='The image could not load. Please try again.'}}
-cards.forEach(c=>c.addEventListener('click',()=>{opener=c;dialog.showModal();document.body.classList.add('locked');show(Number(c.dataset.project));dialog.querySelector('.modal-close').focus()}));
-function closeViewer(){dialog.close()};dialog.querySelector('.modal-close').addEventListener('click',closeViewer);dialog.addEventListener('close',()=>{clean();document.body.classList.remove('locked');opener?.focus()});
-function step(dir){const visible=cards.filter(c=>!c.hidden).map(c=>Number(c.dataset.project));show(visible[(visible.indexOf(current)+dir+visible.length)%visible.length])};dialog.querySelector('.previous').addEventListener('click',()=>step(-1));dialog.querySelector('.next').addEventListener('click',()=>step(1));dialog.addEventListener('keydown',e=>{if(e.key==='ArrowRight')step(1);if(e.key==='ArrowLeft')step(-1)});
-function panorama(container,url){const wrap=document.createElement('div');wrap.className='pano';const canvas=document.createElement('canvas');canvas.setAttribute('aria-label','360 degree panorama. Drag to look around, use arrow keys to rotate.');canvas.tabIndex=0;const help=document.createElement('div');help.className='pano-help';help.textContent='Drag to explore · Arrow keys to look around';wrap.append(canvas,help);container.append(wrap);const gl=canvas.getContext('webgl');if(!gl){wrap.textContent='360° view requires WebGL. ';const a=document.createElement('a');a.href=url;a.textContent='Open panoramic image ↗';wrap.append(a);return ()=>{}}const vs='attribute vec2 p;varying vec2 uv;void main(){uv=p;gl_Position=vec4(p,0.,1.);}';const frag='precision mediump float;varying vec2 uv;uniform sampler2D tex;uniform float yaw;uniform float pitch;uniform float aspect;void main(){vec3 d=normalize(vec3(uv.x*aspect,-uv.y,1.3));float cp=cos(pitch),sp=sin(pitch);d=vec3(d.x,d.y*cp-d.z*sp,d.y*sp+d.z*cp);float cy=cos(yaw),sy=sin(yaw);d=vec3(d.x*cy+d.z*sy,d.y,-d.x*sy+d.z*cy);vec2 t=vec2(atan(d.x,d.z)/6.2831853+0.5,asin(clamp(d.y,-1.,1.))/3.14159265+0.5);gl_FragColor=texture2D(tex,t);}';function shader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return s}const prog=gl.createProgram(),vert=shader(gl.VERTEX_SHADER,vs),pixel=shader(gl.FRAGMENT_SHADER,frag);gl.attachShader(prog,vert);gl.attachShader(prog,pixel);gl.linkProgram(prog);gl.useProgram(prog);const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);const p=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(p);gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);const tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);let yaw=0,pitch=0,ready=false,dead=false;const yloc=gl.getUniformLocation(prog,'yaw'),ploc=gl.getUniformLocation(prog,'pitch'),aloc=gl.getUniformLocation(prog,'aspect');function draw(){if(!ready||dead)return;canvas.width=canvas.clientWidth*Math.min(devicePixelRatio,1.5);canvas.height=canvas.clientHeight*Math.min(devicePixelRatio,1.5);gl.viewport(0,0,canvas.width,canvas.height);gl.uniform1f(yloc,yaw);gl.uniform1f(ploc,pitch);gl.uniform1f(aloc,canvas.width/canvas.height);gl.drawArrays(gl.TRIANGLE_STRIP,0,4)}const img=new Image();img.onload=()=>{if(dead)return;gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,img);ready=true;draw()};img.onerror=()=>help.textContent='Panorama could not load. Please reopen the viewer.';img.src=url;let pointer=null;canvas.addEventListener('pointerdown',e=>{pointer=[e.clientX,e.clientY];canvas.setPointerCapture(e.pointerId)});canvas.addEventListener('pointermove',e=>{if(!pointer)return;yaw-=(e.clientX-pointer[0])*.005;pitch=Math.max(-1.3,Math.min(1.3,pitch+(e.clientY-pointer[1])*.005));pointer=[e.clientX,e.clientY];draw()});canvas.addEventListener('pointerup',()=>pointer=null);canvas.addEventListener('pointercancel',()=>pointer=null);canvas.addEventListener('keydown',e=>{if(!e.key.startsWith('Arrow'))return;e.preventDefault();e.stopPropagation();if(e.key==='ArrowLeft')yaw-=.12;if(e.key==='ArrowRight')yaw+=.12;if(e.key==='ArrowUp')pitch=Math.max(-1.3,pitch-.12);if(e.key==='ArrowDown')pitch=Math.min(1.3,pitch+.12);draw()});window.addEventListener('resize',draw);return ()=>{dead=true;window.removeEventListener('resize',draw);gl.deleteTexture(tex);gl.deleteBuffer(buf);gl.deleteProgram(prog);gl.deleteShader(vert);gl.deleteShader(pixel)}}
-const form=document.querySelector('#contact-form');form?.addEventListener('submit',e=>{e.preventDefault();if(!form.reportValidity())return;const d=new FormData(form);const body=`Name: ${d.get('name')}\nEmail: ${d.get('email')}\nCompany: ${d.get('company')}\nService: ${d.get('service')}\n\n${d.get('message')}`;location.href='mailto:info@studiospheredesign.com?subject='+encodeURIComponent('Project inquiry — '+d.get('name'))+'&body='+encodeURIComponent(body);document.querySelector('#form-status').textContent='Your inquiry is ready in your email app. Review it and send it there. If no app opened, email info@studiospheredesign.com.'});
+nav
+  .querySelectorAll("a")
+  .forEach((a) => a.addEventListener("click", closeMenu));
+addEventListener("pageshow", closeMenu);
+const hero = document.querySelector("#hero-video"),
+  film = document.querySelector(".film-control");
+if (hero) {
+  const loadFilm = () => {
+    const s = hero.querySelector("source");
+    if (!s.src) {
+      s.src = matchMedia("(max-width: 700px)").matches
+        ? "assets/hero-mobile.mp4"
+        : s.dataset.src;
+      hero.load();
+    }
+  };
+  function state() {
+    film.innerHTML = hero.paused
+      ? '<svg class="playback-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 3.5 12 8l-7 4.5Z"/></svg> <span>Play film</span>'
+      : '<svg class="playback-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="4" y="3" width="2.5" height="10" rx=".5"/><rect x="9.5" y="3" width="2.5" height="10" rx=".5"/></svg> <span>Pause film</span>';
+    film.setAttribute(
+      "aria-label",
+      hero.paused ? "Play background film" : "Pause background film",
+    );
+  }
+  film.addEventListener("click", () => {
+    loadFilm();
+    if (hero.paused) hero.play().catch(() => {});
+    else hero.pause();
+  });
+  hero.addEventListener("play", state);
+  hero.addEventListener("pause", state);
+  if (
+    !reduce.matches &&
+    !navigator.connection?.saveData &&
+    !["slow-2g", "2g"].includes(navigator.connection?.effectiveType)
+  ) {
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        loadFilm();
+        hero.play().catch(state);
+      }, 500);
+    });
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) hero.pause();
+  });
+  new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting) hero.pause();
+  }).observe(hero);
+}
+const filterButtons = [...document.querySelectorAll("[data-filter]")],
+  cards = [...document.querySelectorAll("[data-project]")];
+const more = document.querySelector(".portfolio-more");
+let activeCategory = "All",
+  visibleLimit = 12;
+function renderPortfolio() {
+  const matching = cards.filter(
+    (c) => activeCategory === "All" || c.dataset.category === activeCategory,
+  );
+  const visible = new Set(matching.slice(0, visibleLimit));
+  cards.forEach((c) => {
+    c.hidden = !visible.has(c);
+    if (!c.hidden) c.classList.add("visible");
+  });
+  document.querySelector(".result-count").textContent =
+    `Showing ${Math.min(visibleLimit, matching.length)} of ${matching.length} visual experiences`;
+  more.hidden = visibleLimit >= matching.length;
+  return matching;
+}
+function filter(category) {
+  activeCategory = filterButtons.some((b) => b.dataset.filter === category)
+    ? category
+    : "All";
+  visibleLimit = 12;
+  filterButtons.forEach((b) =>
+    b.setAttribute("aria-pressed", String(b.dataset.filter === activeCategory)),
+  );
+  renderPortfolio();
+  const url = new URL(location.href);
+  if (activeCategory === "All") url.searchParams.delete("category");
+  else url.searchParams.set("category", activeCategory);
+  history.replaceState(null, "", url);
+}
+more?.addEventListener("click", () => {
+  const next = visibleLimit;
+  visibleLimit += 12;
+  const matching = renderPortfolio();
+  matching[next]?.focus({ preventScroll: true });
+});
+filterButtons.forEach((b) =>
+  b.addEventListener("click", () => filter(b.dataset.filter)),
+);
+if (filterButtons.length)
+  filter(new URLSearchParams(location.search).get("category") || "All");
+const dialog = document.querySelector(".lightbox"),
+  media = dialog.querySelector(".modal-media"),
+  caption = dialog.querySelector(".modal-caption p");
+let dataPromise,
+  current = 0,
+  opener,
+  dispose;
+function dataset() {
+  return (dataPromise ??= fetch("assets/projects.json").then((r) => {
+    if (!r.ok) throw Error("Portfolio unavailable");
+    return r.json();
+  }));
+}
+function clean() {
+  if (dispose) {
+    dispose();
+    dispose = null;
+  }
+  media.querySelector("video")?.pause();
+  media.replaceChildren();
+}
+async function show(index) {
+  current = index;
+  clean();
+  caption.textContent = "Loading…";
+  try {
+    const all = await dataset(),
+      p = all[index];
+    caption.textContent = p[2] + " — " + p[1];
+    if (p[1] === "Animations") {
+      const v = document.createElement("video");
+      v.src = p[0].startsWith("portfolio/")
+        ? "assets/" + p[0] + ".mp4"
+        : "assets/hero.mp4";
+      v.controls = true;
+      v.preload = "metadata";
+      v.playsInline = true;
+      v.poster = p[0].startsWith("portfolio/")
+        ? "assets/" + p[0] + ".webp"
+        : "assets/hero-poster.jpg";
+      media.append(v);
+      v.play().catch(() => {});
+    } else if (p[1] === "VR 360°") {
+      dispose = panorama(
+        media,
+        p[0].startsWith("portfolio/")
+          ? "assets/" + p[0] + "-xl.webp"
+          : "assets/vr.webp",
+      );
+    } else {
+      const img = new Image();
+      img.src =
+        "assets/" +
+        p[0] +
+        (p[0].startsWith("portfolio/") ? "-xl" : "") +
+        ".webp";
+      img.alt = p[3];
+      media.append(img);
+    }
+  } catch {
+    caption.textContent = "The image could not load. Please try again.";
+  }
+}
+cards.forEach((c) =>
+  c.addEventListener("click", () => {
+    opener = c;
+    dialog.showModal();
+    document.body.classList.add("locked");
+    show(Number(c.dataset.project));
+    dialog.querySelector(".modal-close").focus();
+  }),
+);
+function closeViewer() {
+  dialog.close();
+}
+dialog.querySelector(".modal-close").addEventListener("click", closeViewer);
+dialog.addEventListener("close", () => {
+  clean();
+  document.body.classList.remove("locked");
+  opener?.focus();
+});
+function step(dir) {
+  const visible = cards
+    .filter((c) => !c.hidden)
+    .map((c) => Number(c.dataset.project));
+  show(
+    visible[(visible.indexOf(current) + dir + visible.length) % visible.length],
+  );
+}
+dialog.querySelector(".previous").addEventListener("click", () => step(-1));
+dialog.querySelector(".next").addEventListener("click", () => step(1));
+dialog.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") step(1);
+  if (e.key === "ArrowLeft") step(-1);
+});
+function panorama(container, url) {
+  const wrap = document.createElement("div");
+  wrap.className = "pano";
+  const canvas = document.createElement("canvas");
+  canvas.setAttribute(
+    "aria-label",
+    "360 degree panorama. Drag to look around, use arrow keys to rotate.",
+  );
+  canvas.tabIndex = 0;
+  const help = document.createElement("div");
+  help.className = "pano-help";
+  help.textContent = "Drag to explore · Arrow keys to look around";
+  wrap.append(canvas, help);
+  container.append(wrap);
+  const gl = canvas.getContext("webgl");
+  if (!gl) {
+    wrap.textContent = "360° view requires WebGL. ";
+    const a = document.createElement("a");
+    a.href = url;
+    a.textContent = "Open panoramic image ↗";
+    wrap.append(a);
+    return () => {};
+  }
+  const vs =
+    "attribute vec2 p;varying vec2 uv;void main(){uv=p;gl_Position=vec4(p,0.,1.);}";
+  const frag =
+    "precision mediump float;varying vec2 uv;uniform sampler2D tex;uniform float yaw;uniform float pitch;uniform float aspect;void main(){vec3 d=normalize(vec3(uv.x*aspect,-uv.y,1.3));float cp=cos(pitch),sp=sin(pitch);d=vec3(d.x,d.y*cp-d.z*sp,d.y*sp+d.z*cp);float cy=cos(yaw),sy=sin(yaw);d=vec3(d.x*cy+d.z*sy,d.y,-d.x*sy+d.z*cy);vec2 t=vec2(atan(d.x,d.z)/6.2831853+0.5,asin(clamp(d.y,-1.,1.))/3.14159265+0.5);gl_FragColor=texture2D(tex,t);}";
+  function shader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram(),
+    vert = shader(gl.VERTEX_SHADER, vs),
+    pixel = shader(gl.FRAGMENT_SHADER, frag);
+  gl.attachShader(prog, vert);
+  gl.attachShader(prog, pixel);
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
+    gl.STATIC_DRAW,
+  );
+  const p = gl.getAttribLocation(prog, "p");
+  gl.enableVertexAttribArray(p);
+  gl.vertexAttribPointer(p, 2, gl.FLOAT, false, 0, 0);
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  let yaw = 0,
+    pitch = 0,
+    ready = false,
+    dead = false;
+  const yloc = gl.getUniformLocation(prog, "yaw"),
+    ploc = gl.getUniformLocation(prog, "pitch"),
+    aloc = gl.getUniformLocation(prog, "aspect");
+  function draw() {
+    if (!ready || dead) return;
+    canvas.width = canvas.clientWidth * Math.min(devicePixelRatio, 1.5);
+    canvas.height = canvas.clientHeight * Math.min(devicePixelRatio, 1.5);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.uniform1f(yloc, yaw);
+    gl.uniform1f(ploc, pitch);
+    gl.uniform1f(aloc, canvas.width / canvas.height);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  const img = new Image();
+  img.onload = () => {
+    if (dead) return;
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+    ready = true;
+    draw();
+  };
+  img.onerror = () =>
+    (help.textContent = "Panorama could not load. Please reopen the viewer.");
+  img.src = url;
+  let pointer = null;
+  canvas.addEventListener("pointerdown", (e) => {
+    pointer = [e.clientX, e.clientY];
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener("pointermove", (e) => {
+    if (!pointer) return;
+    yaw -= (e.clientX - pointer[0]) * 0.005;
+    pitch = Math.max(
+      -1.3,
+      Math.min(1.3, pitch + (e.clientY - pointer[1]) * 0.005),
+    );
+    pointer = [e.clientX, e.clientY];
+    draw();
+  });
+  canvas.addEventListener("pointerup", () => (pointer = null));
+  canvas.addEventListener("pointercancel", () => (pointer = null));
+  canvas.addEventListener("keydown", (e) => {
+    if (!e.key.startsWith("Arrow")) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.key === "ArrowLeft") yaw -= 0.12;
+    if (e.key === "ArrowRight") yaw += 0.12;
+    if (e.key === "ArrowUp") pitch = Math.max(-1.3, pitch - 0.12);
+    if (e.key === "ArrowDown") pitch = Math.min(1.3, pitch + 0.12);
+    draw();
+  });
+  window.addEventListener("resize", draw);
+  return () => {
+    dead = true;
+    window.removeEventListener("resize", draw);
+    gl.deleteTexture(tex);
+    gl.deleteBuffer(buf);
+    gl.deleteProgram(prog);
+    gl.deleteShader(vert);
+    gl.deleteShader(pixel);
+  };
+}
+const form = document.querySelector("#contact-form");
+form?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (!form.reportValidity()) return;
+  const d = new FormData(form);
+  const body = `Name: ${d.get("name")}\nEmail: ${d.get("email")}\nCompany: ${d.get("company")}\nService: ${d.get("service")}\n\n${d.get("message")}`;
+  location.href =
+    "mailto:info@studiospheredesign.com?subject=" +
+    encodeURIComponent("Project inquiry — " + d.get("name")) +
+    "&body=" +
+    encodeURIComponent(body);
+  document.querySelector("#form-status").textContent =
+    "Your inquiry is ready in your email app. Review it and send it there. If no app opened, email info@studiospheredesign.com.";
+});
