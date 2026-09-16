@@ -26,3 +26,7 @@ Source: client-authorized Google Drive folder provided for this project. Only se
 ## Publishing
 
 The GitHub Actions workflow builds and deploys `dist/` to GitHub Pages on pushes to main. `SITE_URL` may be set at build time to change the canonical origin.
+
+## Editorial motion update
+
+Native, dependency-free motion in `motion.js` and `motion.css`: masked heading reveals, image reveal and subtle scroll drift, an immersive editorial interlude, contextual portfolio hover controls, service-image crossfades, animated filters and FAQ expansion, a sticky header, chapter navigation, reading progress, Miami local time, magnetic CTA detail and a large typographic footer. No scroll hijacking or blocking intro loader. Pointer effects apply only to fine pointers. Reduced-motion preferences remove transforms, reveals and autoplay. The motion layer responds to preference changes.
