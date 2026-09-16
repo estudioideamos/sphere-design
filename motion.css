@@ -125,3 +125,11 @@ footer a{transition:color .3s}footer a:hover{color:var(--accent)}.team-grid img{
 /* Preserve the containing block for the service crossfade on stacked layouts. */
 .adaptive-columns>.service-visual:not(.sticky-column){position:relative;top:0}
 @media(max-width:1050px){.adaptive-columns>.service-visual{position:relative;top:0}}
+/* A balanced desktop masthead: identity, navigation, one menu control. */
+@media(min-width:701px){
+ .site-header{display:grid;grid-template-columns:1fr auto 1fr;gap:32px}
+ .site-header>.brand{justify-self:start}
+ .header-links{margin:0;justify-self:center;gap:32px}
+ .header-actions{justify-self:end;margin:0}
+}
+@media(min-width:701px) and (max-width:1050px){.site-header{gap:20px}.header-links{gap:22px}}
