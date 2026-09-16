@@ -41,3 +41,6 @@ Footer credits link to https://ideamos.com.ar and use the official logo from htt
 
 Compact coordinated ivory marquees, higher-resolution original media and larger supporting typography improve clarity. Numbered FAQ panels use animated circular plus/minus controls. A fine-pointer cursor combines a precise dot, eased ring and contextual image labels; touch and reduced-motion users retain their native cursor.
 
+
+Insights includes three original sample editorials, each with its own reading page and related-story navigation. These are labeled demo content. Social links use monochrome SVG brand marks from Simple Icons v11 (CC0). The signature marquee retains its large dark editorial treatment; the opening ribbon remains compact.
+
