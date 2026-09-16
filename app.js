@@ -192,9 +192,8 @@ function show(index) {
       v.controls = true;
       v.preload = "metadata";
       v.playsInline = true;
-      v.poster = p[0].startsWith("portfolio/")
-        ? "assets/" + p[0] + ".webp"
-        : "assets/hero-poster.jpg";
+      v.poster =
+        card.querySelector("img").currentSrc || card.querySelector("img").src;
       v.addEventListener("error", () => {
         caption.textContent =
           "This film could not load. Close and reopen it to retry.";

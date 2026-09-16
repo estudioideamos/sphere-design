@@ -603,7 +603,7 @@
       dot.style.transform = `translate3d(${x}px,${y}px,0)`;
       body.classList.add("cursor-visible");
       const target = e.target;
-      const media = target.closest(".project-image");
+      const media = target.closest(".project-image, .journal-card");
       const input = target.closest("input,textarea,select,[contenteditable]");
       body.classList.toggle("cursor-input", !!input);
       body.classList.toggle("cursor-media", !!media);
@@ -612,11 +612,13 @@
         !media && !!target.closest("a,button,summary"),
       );
       ring.firstElementChild.textContent = media
-        ? media.closest(".project").dataset.category === "Animations"
-          ? "Play film"
-          : media.closest(".project").dataset.category === "VR 360°"
-            ? "Explore 360°"
-            : "View image"
+        ? media.matches(".journal-card")
+          ? "Read more"
+          : media.closest(".project").dataset.category === "Animations"
+            ? "Play film"
+            : media.closest(".project").dataset.category === "VR 360°"
+              ? "Explore 360°"
+              : "View image"
         : "";
       if (!frame) frame = requestAnimationFrame(paint);
     },

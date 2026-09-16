@@ -138,6 +138,7 @@ const portfolioPicture = (id, alt, extra = "") => {
   const p = portfolio.find((p) => p[0] === id),
     w = p[4].width,
     h = p[4].height;
+  id = p[4].poster || id;
   return `<img src="assets/${id}.webp" srcset="assets/${id}-sm.webp ${Math.min(720, w)}w, assets/${id}.webp ${Math.min(1440, w)}w, assets/${id}-xl.webp ${w}w" sizes="(max-width:700px) 100vw, 50vw" width="${w}" height="${h}" alt="${alt}" loading="lazy" decoding="async" ${extra}>`;
 };
 const card = (p, i) =>
