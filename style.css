@@ -1250,21 +1250,19 @@ select:focus {
     padding-bottom: 70px;
   }
   .selected-grid {
-    display: block;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+    margin-inline: -20px;
   }
-  .selected-grid .project {
+  .selected-grid .project:nth-child(n) {
     width: 100%;
-    margin: 0 0 45px;
+    margin: 0;
   }
-  .selected-grid .project:nth-child(2) {
-    width: 86%;
-    margin-left: auto;
+  .selected-grid .project:nth-child(n) .project-image {
+    aspect-ratio: 1.13;
   }
-  .selected-grid .project:nth-child(3) {
-    width: 86%;
-  }
-  .selected-grid .project:nth-child(4) {
-    margin-top: 0;
+  .selected-grid .project-meta {
+    margin-inline: 20px;
   }
   .project-image {
     aspect-ratio: 1.12;
