@@ -1,0 +1,1 @@
+{"name":"sphere-design-demo","version":"1.0.0","private":true,"description":"Sphere Design editorial website demo","scripts":{"build":"node build.mjs","dev":"node server.mjs"}}
