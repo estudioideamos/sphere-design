@@ -32,3 +32,9 @@ The GitHub Actions workflow builds and deploys `dist/` to GitHub Pages on pushes
 Native, dependency-free motion in `motion.js` and `motion.css`: masked heading reveals, image reveal and subtle scroll drift, an immersive editorial interlude, contextual portfolio hover controls, service-image crossfades, animated filters and FAQ expansion, a sticky header, chapter navigation, reading progress, Miami local time, magnetic CTA detail and a large typographic footer. No scroll hijacking or blocking intro loader. Pointer effects apply only to fine pointers. Reduced-motion preferences remove transforms, reveals and autoplay. The motion layer responds to preference changes.
 
 The kinetic typography layer adds two marquee sections with three seamless tracks. Duplicate groups are hidden from assistive technology, each section has a pause/resume button, hover and keyboard focus pause motion, and off-screen/background tracks stop. Reduced-motion users see static typography. The footer glow follows fine pointers only.
+
+## Navigation, identity and layout refinements
+
+The shorter column in paired content sections becomes sticky only on desktop, measured after image/font layout and bounded by its section. The full-screen editorial navigation supports Escape, trapped keyboard focus, background inert state, mobile layout and image previews. Services and process use a custom SVG icon family with short entrance/hover strokes and reduced-motion support. Sphere watermarks use the supplied original symbol. The opening marquee uses an ivory palette and original brand-symbol separators. The full-width CTA glow has a feathered mask to avoid boxed edges.
+
+Footer credits link to https://ideamos.com.ar and use the official logo from https://ideamos.com.ar/logos/ideamos-light.webp, as requested. Mobile footer content is centered.

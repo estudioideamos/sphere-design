@@ -228,3 +228,80 @@
     el.style.setProperty('--glow-y', `${event.clientY-r.top}px`);
   }, { passive: true }));
 })();
+
+// Compare intrinsic column heights after media and fonts settle.
+(() => {
+  const groups = [...document.querySelectorAll('.intro, .service-layout, .industries, .faq, .contact-layout, .insights-feature, .team-note, .team-grid')];
+  const desktop = matchMedia('(min-width:1051px)');
+  let pending = 0;
+  groups.forEach(group => group.classList.add('adaptive-columns'));
+  function measure() {
+    pending = 0;
+    groups.forEach(group => {
+      const columns = [...group.children];
+      columns.forEach(el => { el.classList.remove('sticky-column'); el.style.removeProperty('--column-top'); });
+      if (!desktop.matches || columns.length !== 2) return;
+      const heights = columns.map(el => el.getBoundingClientRect().height);
+      const short = heights[0] <= heights[1] ? 0 : 1;
+      if (Math.abs(heights[0] - heights[1]) < 80) return;
+      const el = columns[short];
+      el.style.setProperty('--column-top', `${Math.min(104, innerHeight - heights[short] - 24)}px`);
+      el.classList.add('sticky-column');
+    });
+  }
+  const schedule = () => { if (!pending) pending = requestAnimationFrame(measure); };
+  const observer = new ResizeObserver(schedule);
+  groups.forEach(group => [...group.children].forEach(el => observer.observe(el)));
+  addEventListener('resize', schedule, { passive: true });
+  addEventListener('load', schedule, { once: true });
+  desktop.addEventListener('change', schedule);
+  document.fonts?.ready.then(schedule);
+  schedule();
+})();
+
+(() => {
+  const preference = matchMedia('(prefers-reduced-motion: reduce)');
+  const menu = document.querySelector('.editorial-menu');
+  const preview = menu.querySelector('.menu-art-frame>img');
+  let previewTicket = 0, previewAnimation;
+  menu.querySelectorAll('.menu-links>a').forEach((link, i) => {
+    link.style.setProperty('--menu-index', i);
+    const update = () => {
+      const ticket = ++previewTicket;
+      const image = new Image(); image.src = `assets/${link.dataset.preview}-sm.webp`;
+      image.decode().then(() => {
+        if (ticket !== previewTicket) return;
+        preview.src = image.src;
+        menu.querySelector('.menu-art-caption>span').textContent = `0${i+1} / 05`;
+        menu.querySelector('.menu-art-caption>p').textContent = link.dataset.caption;
+        if (previewAnimation) previewAnimation.cancel();
+        if (!preference.matches) previewAnimation = preview.animate([{ opacity: .3, transform: 'scale(1.04)' },{ opacity: 1, transform: 'scale(1)' }], { duration: 650, easing: 'cubic-bezier(.16,1,.3,1)' });
+      }).catch(() => {});
+    };
+    link.addEventListener('pointerenter', update);
+    link.addEventListener('focus', update);
+  });
+  const iconGroups = [...document.querySelectorAll('.service-row, .steps article')];
+  const animations = new WeakMap();
+  function draw(group) {
+    if (preference.matches) return;
+    (animations.get(group) || []).forEach(a => a.cancel());
+    const run=[];
+    group.querySelectorAll('.editorial-icon>*').forEach((part,i) => {
+      if (typeof part.getTotalLength !== 'function') return;
+      const length = part.getTotalLength();
+      run.push(part.animate([{ strokeDasharray: `${length} ${length}`, strokeDashoffset: length, opacity:.3 }, { strokeDasharray: `${length} ${length}`, strokeDashoffset: 0, opacity:1 }], { duration:850, delay:i*55, easing:'cubic-bezier(.16,1,.3,1)', fill:'backwards' }));
+    });
+    animations.set(group,run);
+    group.classList.remove('icon-activated');
+    requestAnimationFrame(() => group.classList.add('icon-activated'));
+  }
+  const observer = new IntersectionObserver(entries => entries.forEach(e => {
+    if(e.isIntersecting){draw(e.target);observer.unobserve(e.target)}
+  }), {threshold:.5});
+  iconGroups.forEach(group => {
+    observer.observe(group);
+    group.addEventListener('pointerenter',()=>draw(group));
+    group.addEventListener('focus',()=>draw(group));
+  });
+})();
