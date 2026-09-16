@@ -312,7 +312,7 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const body = document.body;
   const dot = document.createElement('div'), ring = document.createElement('div');
-  dot.className='premium-cursor cursor-dot';ring.className='premium-cursor cursor-ring';ring.innerHTML='<span></span>';
+  dot.className='premium-cursor cursor-dot';ring.className='premium-cursor cursor-ring';ring.innerHTML='<span></span><svg class="cursor-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg>';
   dot.setAttribute('aria-hidden','true');ring.setAttribute('aria-hidden','true');body.append(dot,ring);
   let x=0,y=0,rx=0,ry=0,frame=0,seen=false;
   const enabled=()=>fine.matches&&!reduced.matches;
@@ -335,7 +335,7 @@
     body.classList.toggle('cursor-input',!!input);
     body.classList.toggle('cursor-media',!!media);
     body.classList.toggle('cursor-link',!media&&!!target.closest('a,button,summary'));
-    ring.firstElementChild.textContent=media?(media.closest('.project').dataset.category==='Animations'?'Play film ↗':media.closest('.project').dataset.category==='VR 360°'?'Explore 360°':'View image ↗'):'';
+    ring.firstElementChild.textContent=media?(media.closest('.project').dataset.category==='Animations'?'Play film':media.closest('.project').dataset.category==='VR 360°'?'Explore 360°':'View image'):'';
     if(!frame)frame=requestAnimationFrame(paint);
   },{passive:true});
   document.documentElement.addEventListener('pointerleave',()=>{body.classList.remove('cursor-visible');seen=false;cancelAnimationFrame(frame);frame=0});
