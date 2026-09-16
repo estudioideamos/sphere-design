@@ -145,7 +145,7 @@
     const preview = new Image();
     preview.className = 'service-preview'; preview.alt = ''; preview.setAttribute('aria-hidden', 'true');
     serviceVisual.append(preview);
-    const serviceImages = ['hero-poster.jpg', 'interior1.webp', 'exterior2.webp', 'vr-sm.webp', 'floorplan.webp', 'product.webp', 'exterior1.webp'];
+    const serviceImages = ['hero-poster.jpg', 'interior1-xl.webp', 'exterior2-xl.webp', 'vr.webp', 'floorplan.webp', 'product.webp', 'exterior1.webp'];
     const serviceLabels = ['ARCHITECTURE IN MOTION.', 'PRECISION IN EVERY DETAIL.', 'ARCHITECTURE. IN CONTEXT.', 'A NEW POINT OF VIEW.', 'CLARITY AT EVERY LEVEL.', 'MATERIAL. FORM. DETAIL.', 'THE FOUNDATION OF THE VISION.'];
     let ticket = 0;
     document.querySelectorAll('.service-row').forEach((row, i) => {
@@ -268,7 +268,7 @@
     link.style.setProperty('--menu-index', i);
     const update = () => {
       const ticket = ++previewTicket;
-      const image = new Image(); image.src = `assets/${link.dataset.preview}-sm.webp`;
+      const image = new Image(); image.src = `assets/${link.dataset.preview}-xl.webp`;
       image.decode().then(() => {
         if (ticket !== previewTicket) return;
         preview.src = image.src;
@@ -304,4 +304,41 @@
     group.addEventListener('pointerenter',()=>draw(group));
     group.addEventListener('focus',()=>draw(group));
   });
+})();
+
+// Animate only while the pointer is moving; stop the frame loop at rest.
+(() => {
+  const fine = matchMedia('(hover: hover) and (pointer: fine)');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const body = document.body;
+  const dot = document.createElement('div'), ring = document.createElement('div');
+  dot.className='premium-cursor cursor-dot';ring.className='premium-cursor cursor-ring';ring.innerHTML='<span></span>';
+  dot.setAttribute('aria-hidden','true');ring.setAttribute('aria-hidden','true');body.append(dot,ring);
+  let x=0,y=0,rx=0,ry=0,frame=0,seen=false;
+  const enabled=()=>fine.matches&&!reduced.matches;
+  function paint(){
+    frame=0;if(!enabled())return;
+    rx+=(x-rx)*.24;ry+=(y-ry)*.24;
+    ring.style.transform=`translate3d(${rx.toFixed(2)}px,${ry.toFixed(2)}px,0)`;
+    if(Math.abs(x-rx)+Math.abs(y-ry)>.15)frame=requestAnimationFrame(paint);
+  }
+  const setup=()=>{body.classList.toggle('custom-cursor',enabled());if(!enabled()){body.classList.remove('cursor-visible','cursor-link','cursor-media','cursor-input');cancelAnimationFrame(frame);frame=0;seen=false}};
+  fine.addEventListener('change',setup);reduced.addEventListener('change',setup);setup();
+  addEventListener('pointermove',e=>{
+    if(!enabled()||e.pointerType==='touch')return;
+    x=e.clientX;y=e.clientY;if(!seen){rx=x;ry=y;seen=true}
+    dot.style.transform=`translate3d(${x}px,${y}px,0)`;
+    body.classList.add('cursor-visible');
+    const target=e.target;
+    const media=target.closest('.project-image');
+    const input=target.closest('input,textarea,select,[contenteditable]');
+    body.classList.toggle('cursor-input',!!input);
+    body.classList.toggle('cursor-media',!!media);
+    body.classList.toggle('cursor-link',!media&&!!target.closest('a,button,summary'));
+    ring.firstElementChild.textContent=media?(media.closest('.project').dataset.category==='Animations'?'Play film ↗':media.closest('.project').dataset.category==='VR 360°'?'Explore 360°':'View image ↗'):'';
+    if(!frame)frame=requestAnimationFrame(paint);
+  },{passive:true});
+  document.documentElement.addEventListener('pointerleave',()=>{body.classList.remove('cursor-visible');seen=false;cancelAnimationFrame(frame);frame=0});
+  addEventListener('blur',()=>{body.classList.remove('cursor-visible');seen=false});
+  document.addEventListener('keydown',e=>{if(e.key==='Tab')body.classList.remove('cursor-visible')});
 })();

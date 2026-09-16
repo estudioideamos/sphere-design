@@ -38,3 +38,6 @@ The kinetic typography layer adds two marquee sections with three seamless track
 The shorter column in paired content sections becomes sticky only on desktop, measured after image/font layout and bounded by its section. The full-screen editorial navigation supports Escape, trapped keyboard focus, background inert state, mobile layout and image previews. Services and process use a custom SVG icon family with short entrance/hover strokes and reduced-motion support. Sphere watermarks use the supplied original symbol. The opening marquee uses an ivory palette and original brand-symbol separators. The full-width CTA glow has a feathered mask to avoid boxed edges.
 
 Footer credits link to https://ideamos.com.ar and use the official logo from https://ideamos.com.ar/logos/ideamos-light.webp, as requested. Mobile footer content is centered.
+
+Compact coordinated ivory marquees, higher-resolution original media and larger supporting typography improve clarity. Numbered FAQ panels use animated circular plus/minus controls. A fine-pointer cursor combines a precise dot, eased ring and contextual image labels; touch and reduced-motion users retain their native cursor.
+
