@@ -261,3 +261,6 @@ a.social-icon:hover,a.social-icon:focus-visible{background:var(--accent);border-
 .marquee-statement .marquee-secondary{background:#e4e2d8;margin-top:12px;padding-block:16px}
 .marquee-statement .marquee-secondary .marquee-group{gap:30px;padding-right:30px}
 @media(max-width:700px){.marquee-statement .marquee-phrase,.marquee-statement .marquee-outline{font-size:76px}.marquee-statement .marquee-group{gap:32px;padding-right:32px}.marquee-statement .marquee-medallion img{width:36px;height:36px}.marquee-statement .marquee-image{width:95px;height:64px}.marquee-statement>.marquee-window:not(.marquee-secondary){padding-bottom:25px}.marquee-statement .marquee-topline{padding-block:20px}}
+
+.playback-icon{display:block;width:16px;height:16px;flex:0 0 16px;fill:currentColor}
+.marquee-ribbon .marquee-toggle .playback-icon{width:14px;height:14px;flex-basis:14px}

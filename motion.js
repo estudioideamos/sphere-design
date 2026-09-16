@@ -216,7 +216,7 @@
       const paused = el.classList.toggle('user-paused');
       button.setAttribute('aria-pressed', String(paused));
       button.setAttribute('aria-label', `${paused ? 'Resume' : 'Pause'} ${label}`);
-      button.innerHTML = `${paused ? '▶' : 'Ⅱ'} <span>${paused ? 'Resume motion' : 'Pause motion'}</span>`;
+      button.innerHTML = `${paused ? '<svg class="playback-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 3.5 12 8l-7 4.5Z"/></svg>' : '<svg class="playback-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="4" y="3" width="2.5" height="10" rx=".5"/><rect x="9.5" y="3" width="2.5" height="10" rx=".5"/></svg>'} <span>${paused ? 'Resume motion' : 'Pause motion'}</span>`;
     });
   });
   document.addEventListener('visibilitychange', sync);
