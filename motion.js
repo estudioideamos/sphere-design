@@ -124,7 +124,7 @@
   motionPreference.addEventListener('change', () => {
     if (!canMove()) {
       observed.forEach(el => el.classList.add('entered'));
-      document.getAnimations().forEach(a => a.finish());
+      document.getAnimations().forEach(a => { if (a.effect?.getComputedTiming().endTime !== Infinity) { try { a.finish(); } catch {} } });
     }
     scheduleScroll();
   });
@@ -196,4 +196,35 @@
   // Images or font swaps can change document height after the first frame.
   addEventListener('load', scheduleScroll, { once: true });
   document.fonts?.ready.then(scheduleScroll);
+})();
+
+// Continuous type runs only on screen, with hover, keyboard and manual pause.
+(() => {
+  const preference = matchMedia('(prefers-reduced-motion: reduce)');
+  const marquees = [...document.querySelectorAll('.marquee-section')];
+  const visible = new Set();
+  const sync = () => marquees.forEach(el => el.classList.toggle('is-running', visible.has(el) && !document.hidden && !preference.matches));
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) visible.add(e.target); else visible.delete(e.target); });
+    sync();
+  });
+  marquees.forEach(el => {
+    observer.observe(el);
+    const button = el.querySelector('.marquee-toggle');
+    const label = button.getAttribute('aria-label').replace(/^Pause /, '');
+    button.addEventListener('click', () => {
+      const paused = el.classList.toggle('user-paused');
+      button.setAttribute('aria-pressed', String(paused));
+      button.setAttribute('aria-label', `${paused ? 'Resume' : 'Pause'} ${label}`);
+      button.innerHTML = `${paused ? '▶' : 'Ⅱ'} <span>${paused ? 'Resume motion' : 'Pause motion'}</span>`;
+    });
+  });
+  document.addEventListener('visibilitychange', sync);
+  preference.addEventListener('change', sync);
+  document.querySelectorAll('.closing').forEach(el => el.addEventListener('pointermove', event => {
+    if (preference.matches || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--glow-x', `${event.clientX-r.left}px`);
+    el.style.setProperty('--glow-y', `${event.clientY-r.top}px`);
+  }, { passive: true }));
 })();
