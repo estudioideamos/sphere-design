@@ -159,16 +159,9 @@ if (filterButtons.length)
 const dialog = document.querySelector(".lightbox"),
   media = dialog.querySelector(".modal-media"),
   caption = dialog.querySelector(".modal-caption p");
-let dataPromise,
-  current = 0,
+let current = 0,
   opener,
   dispose;
-function dataset() {
-  return (dataPromise ??= fetch("assets/projects.json").then((r) => {
-    if (!r.ok) throw Error("Portfolio unavailable");
-    return r.json();
-  }));
-}
 function clean() {
   if (dispose) {
     dispose();
@@ -177,13 +170,19 @@ function clean() {
   media.querySelector("video")?.pause();
   media.replaceChildren();
 }
-async function show(index) {
+function show(index) {
   current = index;
   clean();
   caption.textContent = "Loading…";
   try {
-    const all = await dataset(),
-      p = all[index];
+    const card = cards.find((c) => Number(c.dataset.project) === index);
+    if (!card?.dataset.asset) throw Error("Project unavailable");
+    const p = [
+      card.dataset.asset,
+      card.dataset.category,
+      card.querySelector("h3").textContent,
+      card.querySelector("img").alt,
+    ];
     caption.textContent = p[2] + " — " + p[1];
     if (p[1] === "Animations") {
       const v = document.createElement("video");
@@ -196,6 +195,10 @@ async function show(index) {
       v.poster = p[0].startsWith("portfolio/")
         ? "assets/" + p[0] + ".webp"
         : "assets/hero-poster.jpg";
+      v.addEventListener("error", () => {
+        caption.textContent =
+          "This film could not load. Close and reopen it to retry.";
+      });
       media.append(v);
       v.play().catch(() => {});
     } else if (p[1] === "VR 360°") {
@@ -213,10 +216,15 @@ async function show(index) {
         (p[0].startsWith("portfolio/") ? "-xl" : "") +
         ".webp";
       img.alt = p[3];
+      img.addEventListener("error", () => {
+        caption.textContent =
+          "This image could not load. Close and reopen it to retry.";
+      });
       media.append(img);
     }
   } catch {
-    caption.textContent = "The image could not load. Please try again.";
+    caption.textContent =
+      "This project could not load. Close and reopen it to retry.";
   }
 }
 cards.forEach((c) =>
