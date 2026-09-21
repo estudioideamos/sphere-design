@@ -4507,3 +4507,17 @@ button:focus-visible .ui-arrow {
   .reference-scroll .process { padding-bottom: 48px; }
   .reference-scroll .process-track .steps article { padding-bottom: 28px; }
 }
+/* The first surface rises over the hero; its content remains in normal flow. */
+@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
+  .home.reference-scroll #main { isolation: isolate; }
+  .home.reference-scroll .hero { position: sticky; top: calc(-1 * var(--hero-overflow, 0px)); z-index: 0; }
+  .reference-scroll .hero-following {
+    position: relative;
+    z-index: 1;
+    margin-top: -28px;
+    padding-top: 28px;
+    border-radius: 32px 32px 0 0;
+    background: var(--bg);
+    box-shadow: 0 -18px 65px #0003;
+  }
+}

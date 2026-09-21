@@ -693,6 +693,15 @@
   const eligible = matchMedia(
     "(min-width: 1000px) and (prefers-reduced-motion: no-preference)",
   );
+  const hero = document.querySelector(".home .hero");
+  if (hero) {
+    const surface = document.createElement("div");
+    surface.className = "hero-following";
+    const following = [];
+    for (let node = hero.nextElementSibling; node; node = node.nextElementSibling) following.push(node);
+    hero.after(surface);
+    surface.append(...following);
+  }
   const pairs = [];
   for (const selector of [".selected", ".services", ".process"]) {
     const panel = document.querySelector(selector);
@@ -730,6 +739,7 @@
   }
   function configure() {
     document.body.classList.toggle("reference-scroll", eligible.matches);
+    if (hero) hero.style.setProperty("--hero-overflow", `${Math.max(0, hero.offsetHeight - innerHeight)}px`);
     pairs.forEach(({ previous }) =>
       previous.style.setProperty(
         "--underlay-overflow",
