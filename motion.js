@@ -232,7 +232,7 @@
     el.addEventListener("pointerleave", () => (el.style.translate = "0px 0px"));
   });
 
-  // Editorial crossfades reuse media already supplied for the portfolio.
+  // Service previews share supplied portfolio media; films load only on demand.
   const serviceVisual = document.querySelector(".service-visual");
   if (serviceVisual) {
     const preview = new Image();
@@ -240,16 +240,24 @@
     preview.alt = "";
     preview.setAttribute("aria-hidden", "true");
     serviceVisual.append(preview);
-    const serviceImages = [
-      "hero-poster.jpg",
-      "interior1-xl.webp",
+    const film = document.createElement("video");
+    film.className = "service-film";
+    film.muted = true;
+    film.loop = true;
+    film.playsInline = true;
+    film.preload = "none";
+    film.setAttribute("aria-hidden", "true");
+    serviceVisual.append(film);
+    const images = [
+      "hero-poster.webp?v=20260921",
+      "portfolio/item-023.webp",
       "exterior2-xl.webp",
       "vr.webp",
       "floorplan.webp",
       "product.webp",
       "exterior1.webp",
     ];
-    const serviceLabels = [
+    const labels = [
       "ARCHITECTURE IN MOTION.",
       "PRECISION IN EVERY DETAIL.",
       "ARCHITECTURE. IN CONTEXT.",
@@ -259,33 +267,119 @@
       "THE FOUNDATION OF THE VISION.",
     ];
     let ticket = 0;
+    let active = -1;
+    const play = () => {
+      if (
+        active !== 0 ||
+        !canMove() ||
+        document.hidden ||
+        navigator.connection?.saveData
+      )
+        return;
+      if (!film.getAttribute("src")) film.src = "assets/service-motion.mp4";
+      film
+        .play()
+        .then(() => {
+          if (active === 0 && canMove()) film.classList.add("active");
+          else film.pause();
+        })
+        .catch(() => {});
+    };
     document.querySelectorAll(".service-row").forEach((row, i) => {
       const change = () => {
-        if (!finePointer.matches) return;
+        active = i;
+        film.pause();
+        film.classList.remove("active");
         const stamp = ++ticket;
         const img = new Image();
-        img.src = `assets/${serviceImages[i]}`;
+        img.src = `assets/${images[i]}`;
         img
           .decode()
           .then(() => {
             if (stamp !== ticket) return;
+            serviceVisual.classList.toggle("is-plan", i === 4);
             preview.src = img.src;
             preview.classList.add("active");
-            if (canMove())
-              preview.animate(
-                [
-                  { opacity: 0.25, transform: "scale(1.035)" },
-                  { opacity: 1, transform: "scale(1)" },
-                ],
-                { duration: 600, easing: "cubic-bezier(.16,1,.3,1)" },
-              );
-            serviceVisual.querySelector("span").textContent = serviceLabels[i];
+            serviceVisual.querySelector("span").textContent = labels[i];
+            play();
           })
           .catch(() => {});
       };
       row.addEventListener("pointerenter", change);
       row.addEventListener("focus", change);
     });
+    new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) film.pause();
+      else play();
+    }).observe(serviceVisual);
+    document.addEventListener("visibilitychange", () =>
+      document.hidden ? film.pause() : play(),
+    );
+    motionPreference.addEventListener("change", () => {
+      if (!canMove()) {
+        film.pause();
+        film.classList.remove("active");
+      } else play();
+    });
+  }
+
+  // Native scrolling drives the paired gallery; mobile keeps the full-width list.
+  const selection = document.querySelector(".selected");
+  if (selection) {
+    const sequence = selection.querySelector(".selected-sequence");
+    const grid = selection.querySelector(".selected-grid");
+    const panels = [...sequence.querySelectorAll(".selected-panel")];
+    const desktop = matchMedia("(min-width: 1000px) and (min-height: 650px)");
+    let active = -1;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      if (sequence.hidden) return;
+      const r = sequence.getBoundingClientRect();
+      const distance = sequence.offsetHeight - innerHeight + 88;
+      const progress = Math.max(0, Math.min(1, (88 - r.top) / distance));
+      const index = Math.min(
+        panels.length - 1,
+        Math.floor(progress * panels.length),
+      );
+      sequence.querySelector(".selected-progress span").style.transform =
+        `scaleX(${progress})`;
+      if (index === active) return;
+      active = index;
+      panels.forEach((panel, i) => {
+        panel.classList.toggle("active", i === index);
+        panel.inert = i !== index;
+        panel.setAttribute("aria-hidden", String(i !== index));
+        panel
+          .querySelectorAll(".project")
+          .forEach((card) => card.classList.add("entered"));
+      });
+    };
+    const configure = () => {
+      const enabled = desktop.matches && canMove();
+      sequence.hidden = !enabled;
+      grid.hidden = enabled;
+      selection.classList.toggle("is-sequenced", enabled);
+      active = -1;
+      update();
+    };
+    addEventListener(
+      "scroll",
+      () => {
+        if (!sequence.hidden && !frame) frame = requestAnimationFrame(update);
+      },
+      { passive: true },
+    );
+    addEventListener(
+      "resize",
+      () => {
+        if (!frame) frame = requestAnimationFrame(update);
+      },
+      { passive: true },
+    );
+    desktop.addEventListener("change", configure);
+    motionPreference.addEventListener("change", configure);
+    configure();
   }
 
   document.querySelectorAll("[data-filter]").forEach((button) =>

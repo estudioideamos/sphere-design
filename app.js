@@ -72,7 +72,7 @@ if (hero) {
     const s = hero.querySelector("source");
     if (!s.src) {
       s.src = matchMedia("(max-width: 700px)").matches
-        ? "assets/hero-mobile.mp4"
+        ? "assets/hero-mobile.mp4?v=20260921"
         : s.dataset.src;
       hero.load();
     }

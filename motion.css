@@ -4216,3 +4216,121 @@ button:focus-visible .ui-arrow {
     animation: none;
   }
 }
+
+/* Client feedback: self-contained service previews and paired scroll gallery. */
+.service-visual {
+  background: var(--bg, #141513);
+}
+.service-visual .service-film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+.service-visual .service-film.active {
+  opacity: 1;
+}
+.service-visual.is-plan > picture {
+  visibility: hidden;
+}
+.service-visual.is-plan .service-preview {
+  object-fit: contain;
+  padding: 26px;
+  background: var(--bg, #141513);
+  transform: none;
+}
+.selected-grid[hidden],
+.selected-sequence[hidden] {
+  display: none;
+}
+@media (min-width: 1000px) and (min-height: 650px) {
+  .selected-sequence {
+    height: 340svh;
+  }
+  .selected-stage {
+    position: sticky;
+    top: 88px;
+    height: calc(100svh - 110px);
+    min-height: 510px;
+    overflow: hidden;
+  }
+  .selected-panel {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 26px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 0.65s,
+      visibility 0.65s;
+  }
+  .selected-panel.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .selected-panel .project {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .selected-panel .project:first-child {
+    transform: translateY(12%);
+  }
+  .selected-panel .project:nth-child(2) {
+    transform: translateY(-12%);
+  }
+  .selected-panel.active .project {
+    transform: none;
+  }
+  .selected-panel .project-image {
+    height: calc(100% - 72px);
+    aspect-ratio: auto;
+  }
+  .selected-panel .project-meta {
+    padding-top: 18px;
+  }
+  .selected-category {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #e9e6dc;
+    color: #22251d;
+    padding: 18px 36px 22px;
+    text-align: center;
+    pointer-events: none;
+  }
+  .selected-category > span {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+  }
+  .selected-category h3 {
+    font-family: "Italiana", serif;
+    font-size: clamp(38px, 4vw, 64px);
+    font-weight: 400;
+    line-height: 1.1;
+    margin-top: 7px;
+  }
+  .selected-progress {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--line);
+  }
+  .selected-progress span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--accent);
+    transform-origin: left;
+  }
+}

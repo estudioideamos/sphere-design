@@ -36,13 +36,13 @@ const portfolio = JSON.parse(fs.readFileSync("portfolio-data.json", "utf8"));
 const projects = [...featuredProjects, ...portfolio];
 const services = [
   [
-    "Architectural films",
+    "Architectural Walkthroughs and Cinematic Animations",
     "Reveal architecture through movement, light and experience.",
     "Animations",
   ],
   [
     "Interior renderings",
-    "Materials, lighting, furniture and atmosphere, precisely imagined.",
+    "Architecture, finishes, atmosphere and FF&amp;E communicate with precision.",
     "Residential",
   ],
   [
@@ -52,7 +52,7 @@ const services = [
   ],
   [
     "VR 360° experiences",
-    "Experience a project from within, before it exists.",
+    "Experience a project from within an immersive 360° environment, before it exists.",
     "VR 360°",
   ],
   [
@@ -188,10 +188,28 @@ pages["index.html"] = {
   active: "Home",
   description:
     "Sphere Design creates architectural renderings, cinematic animations and immersive VR experiences. Based in Miami. Working worldwide.",
-  body: `<section class="hero"><div class="hero-media"><video id="hero-video" muted playsinline loop preload="none" poster="assets/hero-poster.webp" aria-label="Sphere Design architectural film"><source data-src="assets/hero.mp4" type="video/mp4"></video></div><div class="hero-shade"></div><div class="hero-content wrap"><div class="hero-topline"><span class="eyebrow">ARCHITECTURAL VISUALIZATION STUDIO</span><span class="location"><i></i> MIAMI, FL · WORLDWIDE</span></div><h1>Before it’s built.<br><em>Make it felt.</em></h1><div class="hero-bottom"><p>Architectural visualization for decisions<br>made before construction.</p>${link("portfolio.html", "Explore our work", "hero-link")}<button class="film-control" aria-label="Play background film"><svg class="playback-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 3.5 12 8l-7 4.5Z"/></svg> <span>Play film</span></button></div></div><a href="#intro" class="scroll-cue">SCROLL TO DISCOVER <span>↓</span></a></section>
+  body: `<section class="hero"><div class="hero-media"><video id="hero-video" muted playsinline loop preload="none" poster="assets/hero-poster.webp?v=20260921" aria-label="Sphere Design architectural film"><source data-src="assets/hero.mp4?v=20260921" type="video/mp4"></video></div><div class="hero-shade"></div><div class="hero-content wrap"><div class="hero-topline"><span class="eyebrow">ARCHITECTURAL VISUALIZATION STUDIO</span><span class="location"><i></i> MIAMI, FL · WORLDWIDE</span></div><h1>Before It’s Built.<br><em>Make It Real.</em></h1><div class="hero-bottom"><p>Architectural visualization for confident<br>decisions before construction.</p>${link("contact.html", "Let’s talk about your project", "hero-link")}<button class="film-control" aria-label="Play background film"><svg class="playback-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 3.5 12 8l-7 4.5Z"/></svg> <span>Play film</span></button></div></div><a href="#intro" class="scroll-cue">SCROLL TO DISCOVER <span>↓</span></a></section>
 ${marquee()}<section class="intro wrap" id="intro">${eyebrow("01", "THE SPHERE PERSPECTIVE")}<div><h2>More than an image.<br><em>A vision, made tangible.</em></h2><div class="intro-bottom"><p>Helping developers market and sell, architects communicate with clarity, interior designers validate design with precision, and realtors showcase property and potential.</p>${link("about.html", "Meet the studio")}</div></div></section>
-<section class="selected wrap" id="selected-work"><div class="section-heading">${eyebrow("02", "SELECTED WORK")}<h2>Unbuilt.<br><em>Unforgettable.</em></h2>${link("portfolio.html", "View full portfolio")}</div><div class="selected-grid">${[projects[0], projects[1], projects[2], projects[3]].map(card).join("")}</div></section>
-${marquee(true)}<section class="cinema" aria-label="The art of atmosphere"><div class="cinema-frame">${picture("interior2", "Sculptural furniture, warm light and considered materials in a Sphere Design residential interior").replace('sizes="(max-width: 700px) 100vw, 70vw"', 'sizes="100vw"')}<div class="cinema-shade"></div><div class="cinema-content wrap"><p class="eyebrow"><span>THE ART OF ATMOSPHERE</span>STILL IMAGE. LASTING IMPRESSION.</p><h2>A feeling.<br>A place.<br><em>A possibility.</em></h2><div class="cinema-bottom"><span>LIGHT / MATERIAL / EMOTION</span>${link("portfolio.html?category=Residential", "Enter the experience")}</div></div><span class="frame-corner corner-tl" aria-hidden="true"></span><span class="frame-corner corner-br" aria-hidden="true"></span></div></section><section class="services wrap" id="expertise"><div class="section-heading">${eyebrow("03", "OUR EXPERTISE")}<h2>Visualization beyond<br><em>the still image.</em></h2></div><div class="service-layout"><div class="service-visual">${picture("interior1", "Detailed marble and timber material palette in a Sphere Design interior")}<span>PRECISION IN EVERY DETAIL.</span></div><div class="service-list">${services.map((s, i) => `<a class="service-row" href="portfolio.html?category=${encodeURIComponent(s[2])}"><span class="service-num"><small>0${i + 1}</small>${icon(serviceIcons[i])}</span><div><h3>${s[0]}</h3><p>${s[1]}</p></div>${arrow}</a>`).join("")}</div></div></section>
+<section class="selected wrap" id="selected-work"><div class="section-heading">${eyebrow("02", "SELECTED WORK")}<h2>Unbuilt.<br><em>Unforgettable.</em></h2>${link("portfolio.html", "View full portfolio")}</div><div class="selected-grid">${[projects[0], projects[1], projects[2], projects[3]].map(card).join("")}</div><div class="selected-sequence" hidden><div class="selected-stage">${[
+    "Residential",
+    "Hospitality",
+    "Sports",
+    "Corporate",
+  ]
+    .map(
+      (category, group) =>
+        `<div class="selected-panel" data-selection="${group}"${group ? " inert" : ""}>${portfolio
+          .filter((p) => p[1] === category)
+          .slice(0, 2)
+          .map(card)
+          .join(
+            "",
+          )}<div class="selected-category" aria-hidden="true"><span>SELECTED WORK</span><h3>${category}</h3></div></div>`,
+    )
+    .join(
+      "",
+    )}<div class="selected-progress" aria-hidden="true"><span></span></div></div></div></section>
+${marquee(true)}<section class="cinema" aria-label="The art of atmosphere"><div class="cinema-frame">${picture("interior2", "Sculptural furniture, warm light and considered materials in a Sphere Design residential interior").replace('sizes="(max-width: 700px) 100vw, 70vw"', 'sizes="100vw"')}<div class="cinema-shade"></div><div class="cinema-content wrap"><p class="eyebrow"><span>THE ART OF ATMOSPHERE</span>STILL IMAGE. LASTING IMPRESSION.</p><h2>A feeling.<br>A place.<br><em>A possibility.</em></h2><div class="cinema-bottom"><span>LIGHT / MATERIAL / EMOTION</span>${link("portfolio.html?category=Residential", "Enter the experience")}</div></div><span class="frame-corner corner-tl" aria-hidden="true"></span><span class="frame-corner corner-br" aria-hidden="true"></span></div></section><section class="services wrap" id="expertise"><div class="section-heading">${eyebrow("03", "OUR EXPERTISE")}<h2>Visualization beyond<br><em>the still image.</em></h2></div><div class="service-layout"><div class="service-visual">${picture("portfolio/item-023", "Residential interior rendering 13 by Sphere Design")}<span>PRECISION IN EVERY DETAIL.</span></div><div class="service-list">${services.map((s, i) => `<a class="service-row" href="portfolio.html?category=${encodeURIComponent(s[2])}"><span class="service-num"><small>0${i + 1}</small>${icon(serviceIcons[i])}</span><div><h3>${s[0]}</h3><p>${s[1]}</p></div>${arrow}</a>`).join("")}</div></div></section>
 <section class="industries wrap">${eyebrow("04", "INDUSTRIES WE SERVE")}<div class="industry-list">${["Luxury residential", "Real estate developments", "Multifamily"].map((s, i) => `<a href="portfolio.html?category=${i === 1 ? "Exterior" : "Residential"}"><span>0${i + 1}</span><h2>${s}</h2>${arrow}</a>`).join("")}<p>Residential · Hospitality · Food & Beverage · Sports · Corporate · Retail · Healthcare · Entertainment · Institutional · Aviation & Yachting</p></div></section>
 <section class="process wrap" id="process"><div class="section-heading">${eyebrow("05", "THE PROCESS")}<h2>From possibility<br><em>to visual certainty.</em></h2><p>A clear, collaborative process.<br>A shared vision, at every step.</p></div><div class="steps">${steps.map((s, i) => `<article class="reveal"><div class="step-visual"><span>0${i + 1}</span>${icon(processIcons[i])}</div><h3>${s[0]}</h3><p>${s[1]}</p></article>`).join("")}</div></section>
 <section class="why wrap"><div class="sphere-watermark watermark-why" aria-hidden="true"><img src="assets/sphere-symbol.png" alt="" loading="lazy"></div>${eyebrow("06", "WHY SPHERE")}<h2>Design expertise.<br><em>A partner you can rely on.</em></h2><div class="why-grid">${[
