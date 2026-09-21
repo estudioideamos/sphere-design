@@ -4416,12 +4416,12 @@ button:focus-visible .ui-arrow {
     margin-top: 28px;
   }
   .reference-scroll .process-track {
-    height: 300svh;
+    height: 220svh;
   }
   .reference-scroll .process-track > .steps {
     position: sticky;
     top: 88px;
-    height: calc(100svh - 88px);
+    height: auto;
     align-items: stretch;
   }
   .reference-scroll .process-track .steps article {
@@ -4501,4 +4501,9 @@ button:focus-visible .ui-arrow {
   .menu-links > a { min-height: 44px; padding-block: 4px; }
   .menu-title, .menu-links > a[aria-current] .menu-title { font-size: 34px; }
   .menu-bottom { padding-top: 12px; gap: 12px; }
+}
+
+@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
+  .reference-scroll .process { padding-bottom: 48px; }
+  .reference-scroll .process-track .steps article { padding-bottom: 28px; }
 }
