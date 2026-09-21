@@ -4334,3 +4334,71 @@ button:focus-visible .ui-arrow {
     transform-origin: left;
   }
 }
+
+/* Client feedback: retain the studio credit and simplify decorative labels. */
+.menu-links > a {
+  grid-template-columns: minmax(0, 1fr) 28px;
+}
+.menu-art-caption {
+  justify-content: flex-end;
+}
+.marquee-medallion img {
+  object-fit: contain;
+}
+.film-embed {
+  width: min(1200px, 90vw);
+  height: min(67.5vw, 75vh);
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
+.modal-caption a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.project-image img,
+.modal-media img {
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+@media (min-width: 1000px) and (min-height: 750px) and (prefers-reduced-motion: no-preference) {
+  .process.is-journey {
+    min-height: 190svh;
+  }
+  .process.is-journey .process-stage {
+    position: sticky;
+    top: 115px;
+  }
+  .process.is-journey .steps {
+    position: relative;
+  }
+  .process.is-journey .steps::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(var(--process-progress, 0));
+    transform-origin: left;
+  }
+  .process.is-journey .steps article {
+    opacity: 0.65;
+    transform: translateY(18px);
+    transition:
+      opacity 0.6s,
+      transform 0.6s;
+  }
+  .process.is-journey .steps article.is-complete {
+    opacity: 0.8;
+    transform: none;
+  }
+  .process.is-journey .steps article.is-current {
+    opacity: 1;
+    transform: none;
+  }
+  .process.is-journey .steps article.is-current h3 {
+    color: var(--accent);
+  }
+}

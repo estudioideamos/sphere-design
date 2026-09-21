@@ -55,31 +55,6 @@
   progress.setAttribute("aria-hidden", "true");
   document.body.append(progress);
 
-  let chapterLinks = [];
-  if (document.body.classList.contains("home")) {
-    const chapters = [
-      ["intro", "01 — Perspective"],
-      ["selected-work", "02 — Selected work"],
-      ["expertise", "03 — Expertise"],
-      ["process", "04 — Process"],
-      ["conversation", "05 — Let’s talk"],
-    ];
-    const rail = document.createElement("nav");
-    rail.className = "chapter-nav";
-    rail.setAttribute("aria-label", "Page chapters");
-    rail.innerHTML = chapters
-      .map(
-        ([id, label]) =>
-          `<a href="#${id}" aria-label="${label}"><span>${label}</span></a>`,
-      )
-      .join("");
-    document.body.append(rail);
-    chapterLinks = [...rail.children].map((a) => ({
-      a,
-      section: document.querySelector(a.hash),
-    }));
-  }
-
   const location = document.querySelector(".location");
   let clockTimer;
   if (location) {
@@ -116,11 +91,6 @@
   );
   document.querySelectorAll(".project-image").forEach((el, i) => {
     imageObserver.observe(el);
-    const index = document.createElement("span");
-    index.className = "project-index";
-    index.setAttribute("aria-hidden", "true");
-    index.textContent = `${String(i + 1).padStart(2, "0")} / SPHERE`;
-    el.append(index);
     el.addEventListener(
       "pointermove",
       (e) => {
@@ -145,19 +115,6 @@
     const total = document.documentElement.scrollHeight - vh;
     header.classList.toggle("scrolled", y > 70);
     progress.style.transform = `scaleX(${total > 0 ? clamp(y / total, 0, 1) : 0})`;
-    if (chapterLinks.length) {
-      document
-        .querySelector(".chapter-nav")
-        .classList.toggle("shown", y > vh * 0.65);
-      let active = chapterLinks[0];
-      chapterLinks.forEach((item) => {
-        if (item.section.getBoundingClientRect().top < vh * 0.48) active = item;
-      });
-      chapterLinks.forEach((item) => {
-        if (item === active) item.a.setAttribute("aria-current", "location");
-        else item.a.removeAttribute("aria-current");
-      });
-    }
     if (!canMove()) return;
     if (heroMedia && y < vh * 1.4)
       heroMedia.style.transform = `translateY(${Math.min(y * 0.16, 160)}px)`;
@@ -254,8 +211,8 @@
       "exterior2-xl.webp",
       "vr.webp",
       "floorplan.webp",
-      "product.webp",
-      "exterior1.webp",
+      "portfolio/item-067.webp",
+      "service-cad.webp",
     ];
     const labels = [
       "ARCHITECTURE IN MOTION.",
@@ -297,7 +254,7 @@
           .decode()
           .then(() => {
             if (stamp !== ticket) return;
-            serviceVisual.classList.toggle("is-plan", i === 4);
+            serviceVisual.classList.toggle("is-plan", i === 4 || i === 6);
             preview.src = img.src;
             preview.classList.add("active");
             serviceVisual.querySelector("span").textContent = labels[i];
@@ -562,8 +519,6 @@
         .then(() => {
           if (ticket !== previewTicket) return;
           preview.src = image.src;
-          menu.querySelector(".menu-art-caption>span").textContent =
-            `0${i + 1} / 05`;
           menu.querySelector(".menu-art-caption>p").textContent =
             link.dataset.caption;
           if (previewAnimation) previewAnimation.cancel();
@@ -731,4 +686,50 @@
   document.addEventListener("keydown", (e) => {
     if (e.key === "Tab") body.classList.remove("cursor-visible");
   });
+})();
+
+// The existing process columns unfold in sequence as the reader scrolls.
+(() => {
+  const process = document.querySelector(".process");
+  if (!process) return;
+  const stage = document.createElement("div");
+  stage.className = "process-stage";
+  stage.append(...process.children);
+  process.append(stage);
+  const articles = [...stage.querySelectorAll(".steps article")];
+  const eligible = matchMedia(
+    "(min-width: 1000px) and (min-height: 750px) and (prefers-reduced-motion: no-preference)",
+  );
+  let frame = 0;
+  function update() {
+    frame = 0;
+    if (!eligible.matches) return;
+    const r = process.getBoundingClientRect();
+    const distance = Math.max(1, process.offsetHeight - innerHeight + 115);
+    const progress = Math.max(0, Math.min(1, (115 - r.top) / distance));
+    const active = Math.min(
+      articles.length - 1,
+      Math.floor(progress * articles.length),
+    );
+    stage.style.setProperty("--process-progress", String(progress));
+    articles.forEach((el, i) => {
+      el.classList.add("entered");
+      el.classList.toggle("is-current", i === active);
+      el.classList.toggle("is-complete", i < active);
+    });
+  }
+  const configure = () => {
+    process.classList.toggle("is-journey", eligible.matches);
+    update();
+  };
+  addEventListener(
+    "scroll",
+    () => {
+      if (eligible.matches && !frame) frame = requestAnimationFrame(update);
+    },
+    { passive: true },
+  );
+  addEventListener("resize", configure, { passive: true });
+  eligible.addEventListener("change", configure);
+  configure();
 })();

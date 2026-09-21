@@ -184,7 +184,25 @@ function show(index) {
       card.querySelector("img").alt,
     ];
     caption.textContent = p[2] + " — " + p[1];
-    if (p[1] === "Animations") {
+    if (
+      p[1] === "Animations" &&
+      /^[A-Za-z0-9_-]{11}$/.test(card.dataset.youtube || "")
+    ) {
+      const frame = document.createElement("iframe");
+      frame.className = "film-embed";
+      frame.title = `${p[2]} — architectural film`;
+      frame.src = `https://www.youtube-nocookie.com/embed/${card.dataset.youtube}?autoplay=1&rel=0&playsinline=1`;
+      frame.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+      frame.allowFullscreen = true;
+      frame.referrerPolicy = "strict-origin-when-cross-origin";
+      media.append(frame);
+      const watch = document.createElement("a");
+      watch.href = `https://www.youtube.com/watch?v=${card.dataset.youtube}`;
+      watch.target = "_blank";
+      watch.rel = "noopener noreferrer";
+      watch.textContent = "Watch on YouTube ↗";
+      caption.replaceChildren(document.createTextNode(p[2] + " · "), watch);
+    } else if (p[1] === "Animations") {
       const v = document.createElement("video");
       v.src = p[0].startsWith("portfolio/")
         ? "assets/" + p[0] + ".mp4"
@@ -392,3 +410,13 @@ form?.addEventListener("submit", (e) => {
   document.querySelector("#form-status").textContent =
     "Your inquiry is ready in your email app. Review it and send it there. If no app opened, email info@studiospheredesign.com.";
 });
+
+// Discourage casual saving without blocking page navigation or text selection.
+for (const event of ["contextmenu", "dragstart"]) {
+  document.addEventListener(event, (e) => {
+    if (
+      e.target.closest(".project-image, .modal-media img, .modal-media canvas")
+    )
+      e.preventDefault();
+  });
+}
