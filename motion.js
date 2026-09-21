@@ -44,7 +44,7 @@
           }
         });
       },
-      { threshold: 0.06, rootMargin: "0px 0px -20px 0px" },
+      { threshold: 0.06, rootMargin: "0px 0px 260px 0px" },
     );
     observed.forEach((el) => revealObserver.observe(el));
     document.body.classList.add("motion-ready");
@@ -786,7 +786,10 @@
     if (!e.cancelable) return;
     e.preventDefault();
     if (!frame) target = scrollY;
-    target += e.deltaY * (e.deltaMode === 1 ? 20 : e.deltaMode === 2 ? innerHeight : 1);
+    const delta = e.deltaY * (e.deltaMode === 1 ? 20 : e.deltaMode === 2 ? innerHeight : 1);
+    target += Math.max(-180, Math.min(180, delta));
+    const ahead = Math.min(280, innerHeight * .45);
+    target = Math.max(scrollY - ahead, Math.min(scrollY + ahead, target));
     document.documentElement.classList.add('wheel-gliding');
     if (!frame) { last = performance.now(); frame = requestAnimationFrame(tick); }
   }, { passive: false });
