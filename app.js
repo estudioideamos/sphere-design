@@ -420,3 +420,28 @@ for (const event of ["contextmenu", "dragstart"]) {
       e.preventDefault();
   });
 }
+
+// Account for object-fit cropping, not just card width, when choosing responsive media.
+(() => {
+  const images = [...document.querySelectorAll(".project-image img[srcset]")];
+  const selectSize = (img) => {
+    const width = img.clientWidth,
+      height = img.clientHeight;
+    if (!width || !height) return;
+    const ratio =
+      Number(img.getAttribute("width")) / Number(img.getAttribute("height")) ||
+      img.naturalWidth / img.naturalHeight;
+    if (!Number.isFinite(ratio) || ratio <= 0) return;
+    const pixels = Math.ceil(Math.max(width, height * ratio) * 1.06);
+    const sizes = `${pixels}px`;
+    if (img.sizes !== sizes) img.sizes = sizes;
+  };
+  const observer = new ResizeObserver((entries) =>
+    entries.forEach(({ target }) => selectSize(target)),
+  );
+  images.forEach((img) => {
+    observer.observe(img);
+    img.addEventListener("load", () => selectSize(img));
+    selectSize(img);
+  });
+})();

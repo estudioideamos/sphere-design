@@ -4455,3 +4455,8 @@ button:focus-visible .ui-arrow {
     background: #1b1d18;
   }
 }
+
+/* Film posters retain their native landscape composition instead of being enlarged to a portrait crop. */
+.portfolio-grid .project[data-category="Animations"] .project-image {
+  aspect-ratio: 16 / 9;
+}
