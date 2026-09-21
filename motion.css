@@ -4545,3 +4545,11 @@ html.wheel-gliding { scroll-behavior: auto !important; }
   transition-duration: .4s;
   transition-delay: 0s;
 }
+/* Keep the completed process pinned for reading before releasing it. */
+@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
+  .reference-scroll .process-track { height: calc(220svh + max(600px, 100svh)); }
+}
+@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
+  .reference-scroll .selected-sequence { height: calc(340svh + max(600px, 100svh)); }
+  .reference-scroll .hero-following { margin-top: max(240px, 50svh); }
+}

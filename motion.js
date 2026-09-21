@@ -293,7 +293,7 @@
       frame = 0;
       if (sequence.hidden) return;
       const r = sequence.getBoundingClientRect();
-      const distance = sequence.offsetHeight - innerHeight + 88;
+      const distance = Math.max(1, sequence.offsetHeight - innerHeight + 88 - Math.max(600, innerHeight));
       const progress = Math.max(0, Math.min(1, (88 - r.top) / distance));
       const index = Math.min(
         panels.length - 1,
@@ -728,7 +728,9 @@
   function update() {
     scheduled = 0;
     if (!eligible.matches) return;
-    const distance = Math.max(1, track.offsetHeight - steps.offsetHeight);
+    // Reserve a full viewport of scrolling after the last column is revealed.
+    const readingHold = Math.max(600, innerHeight);
+    const distance = Math.max(1, track.offsetHeight - steps.offsetHeight - readingHold);
     const progress = clamp((88 - track.getBoundingClientRect().top) / distance);
     articles.forEach((article, i) => {
       const reveal =
@@ -767,13 +769,14 @@
 // Ease mouse-wheel steps while retaining native touch, trackpad and nested scrolling.
 (() => {
   const allowed = matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
-  let frame = 0, target = scrollY, last = 0;
+  let frame = 0, target = scrollY, last = 0, written = scrollY;
   const stop = () => { cancelAnimationFrame(frame); frame = 0; target = scrollY; document.documentElement.classList.remove('wheel-gliding'); };
   function tick(time) {
     const dt = Math.min(40, time - last || 16); last = time;
     target = Math.max(0, Math.min(target, document.documentElement.scrollHeight - innerHeight));
-    const next = scrollY + (target - scrollY) * (1 - Math.exp(-dt / 85));
+    const next = scrollY + (target - scrollY) * (1 - Math.exp(-dt / 160));
     scrollTo(0, Math.abs(target - next) < .8 ? target : next);
+    written = scrollY;
     if (Math.abs(target - scrollY) > 1) frame = requestAnimationFrame(tick); else stop();
   }
   addEventListener('wheel', e => {
@@ -782,18 +785,18 @@
     for (let el = e.target; el && el !== document.body; el = el.parentElement) {
       if (/(auto|scroll)/.test(getComputedStyle(el).overflowY) && el.scrollHeight > el.clientHeight + 1) { stop(); return; }
     }
-    if (e.deltaMode === 0 && (Math.abs(e.deltaY) < 40 || !Number.isInteger(e.deltaY))) { stop(); return; }
     if (!e.cancelable) return;
     e.preventDefault();
     if (!frame) target = scrollY;
     const delta = e.deltaY * (e.deltaMode === 1 ? 20 : e.deltaMode === 2 ? innerHeight : 1);
-    target += Math.max(-180, Math.min(180, delta));
-    const ahead = Math.min(280, innerHeight * .45);
+    target += Math.max(-120, Math.min(120, delta * .65));
+    const ahead = Math.min(200, innerHeight * .33);
     target = Math.max(scrollY - ahead, Math.min(scrollY + ahead, target));
     document.documentElement.classList.add('wheel-gliding');
     if (!frame) { last = performance.now(); frame = requestAnimationFrame(tick); }
   }, { passive: false });
   ['pointerdown','keydown','touchstart','blur'].forEach(name => addEventListener(name, stop, { passive: true }));
+  addEventListener('scroll', () => { if (frame && Math.abs(scrollY - written) > 3) stop(); }, { passive: true });
   allowed.addEventListener('change', stop);
 })();
 
