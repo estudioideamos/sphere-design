@@ -688,48 +688,68 @@
   });
 })();
 
-// The existing process columns unfold in sequence as the reader scrolls.
+// Reference interaction: incoming surfaces cover pinned preceding sections.
 (() => {
-  const process = document.querySelector(".process");
-  if (!process) return;
-  const stage = document.createElement("div");
-  stage.className = "process-stage";
-  stage.append(...process.children);
-  process.append(stage);
-  const articles = [...stage.querySelectorAll(".steps article")];
   const eligible = matchMedia(
     "(min-width: 1000px) and (prefers-reduced-motion: no-preference)",
   );
-  let frame = 0;
+  const pairs = [];
+  for (const selector of [".selected", ".services", ".process"]) {
+    const panel = document.querySelector(selector);
+    const previous = panel?.previousElementSibling;
+    if (!previous) continue;
+    const overlap = document.createElement("div");
+    overlap.className = "section-overlap";
+    previous.before(overlap);
+    overlap.append(previous, panel);
+    previous.classList.add("overlap-underlay");
+    panel.classList.add("overlap-panel");
+    pairs.push({ overlap, previous, panel });
+  }
+  const process = document.querySelector(".process");
+  if (!process) return;
+  const steps = process.querySelector(".steps");
+  const track = document.createElement("div");
+  track.className = "process-track";
+  steps.before(track);
+  track.append(steps);
+  const articles = [...steps.children];
+  let scheduled = 0;
+  const clamp = (v) => Math.min(1, Math.max(0, v));
   function update() {
-    frame = 0;
+    scheduled = 0;
     if (!eligible.matches) return;
-    const r = process.getBoundingClientRect();
-    const distance = Math.max(1, process.offsetHeight - innerHeight + 115);
-    const progress = Math.max(0, Math.min(1, (115 - r.top) / distance));
-    const active = Math.min(
-      articles.length - 1,
-      Math.floor(progress * articles.length),
-    );
-    stage.style.setProperty("--process-progress", String(progress));
-    articles.forEach((el, i) => {
-      el.classList.add("entered");
-      el.classList.toggle("is-current", i === active);
-      el.classList.toggle("is-complete", i < active);
+    const distance = Math.max(1, track.offsetHeight - steps.offsetHeight);
+    const progress = clamp((88 - track.getBoundingClientRect().top) / distance);
+    articles.forEach((article, i) => {
+      const reveal =
+        i === 0 ? 1 : clamp((progress * (articles.length - 1) - i + 1) * 1.35);
+      article.classList.add("entered");
+      article.style.setProperty("--step-reveal", String(reveal));
     });
   }
-  const configure = () => {
-    process.classList.toggle("is-journey", eligible.matches);
+  function configure() {
+    document.body.classList.toggle("reference-scroll", eligible.matches);
+    pairs.forEach(({ previous }) =>
+      previous.style.setProperty(
+        "--underlay-overflow",
+        `${Math.max(0, previous.offsetHeight - innerHeight + 88)}px`,
+      ),
+    );
+    if (!eligible.matches)
+      articles.forEach((a) => a.style.removeProperty("--step-reveal"));
     update();
-  };
+  }
   addEventListener(
     "scroll",
     () => {
-      if (eligible.matches && !frame) frame = requestAnimationFrame(update);
+      if (eligible.matches && !scheduled)
+        scheduled = requestAnimationFrame(update);
     },
     { passive: true },
   );
   addEventListener("resize", configure, { passive: true });
   eligible.addEventListener("change", configure);
+  document.fonts.ready.then(configure);
   configure();
 })();

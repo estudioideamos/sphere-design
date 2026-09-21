@@ -4361,48 +4361,6 @@ button:focus-visible .ui-arrow {
   -webkit-touch-callout: none;
   user-select: none;
 }
-@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
-  .process.is-journey {
-    min-height: 190svh;
-  }
-  .process.is-journey .process-stage {
-    position: sticky;
-    top: 115px;
-  }
-  .process.is-journey .steps {
-    position: relative;
-  }
-  .process.is-journey .steps::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--accent);
-    transform: scaleX(var(--process-progress, 0));
-    transform-origin: left;
-  }
-  .process.is-journey .steps article {
-    opacity: 0.65;
-    transform: translateY(18px);
-    transition:
-      opacity 0.6s,
-      transform 0.6s;
-  }
-  .process.is-journey .steps article.is-complete {
-    opacity: 0.8;
-    transform: none;
-  }
-  .process.is-journey .steps article.is-current {
-    opacity: 1;
-    transform: none;
-  }
-  .process.is-journey .steps article.is-current h3 {
-    color: var(--accent);
-  }
-}
-
 /* Decorative numbering is removed; retain generous readable text spacing. */
 .faq summary {
   grid-template-columns: minmax(0, 1fr) 42px;
@@ -4415,29 +4373,85 @@ button:focus-visible .ui-arrow {
     grid-template-columns: minmax(0, 1fr) 34px;
   }
 }
-@media (min-width: 1000px) and (max-height: 750px) {
-  .process.is-journey .process-stage {
-    top: 94px;
+
+/* Native-scroll panel overlaps and progressive column reveals from the reference. */
+@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
+  .reference-scroll .section-overlap {
+    position: relative;
+    isolation: isolate;
   }
-  .process.is-journey .section-heading {
-    margin-bottom: 30px;
+  .reference-scroll .overlap-underlay {
+    position: sticky;
+    top: calc(88px - var(--underlay-overflow, 0px));
+    z-index: 0;
   }
-  .process.is-journey .section-heading h2 {
-    font-size: clamp(30px, 3.5vw, 44px);
+  .reference-scroll .overlap-panel {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: none;
+    margin: -32px 0 0;
+    padding-inline: max(56px, calc((100vw - 1600px) / 2));
+    border: 1px solid #c5c9a924;
+    border-inline: 0;
+    border-bottom: 0;
+    border-radius: 32px 32px 0 0;
+    background: #1b1d18;
+    box-shadow: 0 -22px 70px #0003;
   }
-  .process.is-journey .section-heading > p {
-    margin-top: 12px;
+  .reference-scroll .overlap-panel > .section-heading {
+    display: block;
+    padding-top: 15px;
+    margin-bottom: 65px;
   }
-  .process.is-journey .steps article {
-    padding-top: 16px;
-    padding-right: 16px;
+  .reference-scroll .overlap-panel > .section-heading .eyebrow {
+    margin-bottom: 32px;
   }
-  .process.is-journey .steps h3 {
-    margin: 16px 0 10px;
-    font-size: 17px;
+  .reference-scroll .overlap-panel > .section-heading h2 {
+    font-size: clamp(64px, 7.5vw, 116px);
+    line-height: 1.04;
   }
-  .process.is-journey .step-visual .editorial-icon {
-    width: 32px;
-    height: 32px;
+  .reference-scroll .overlap-panel > .section-heading > p,
+  .reference-scroll .overlap-panel > .section-heading > .text-link {
+    margin-top: 28px;
+  }
+  .reference-scroll .process-track {
+    height: 300svh;
+  }
+  .reference-scroll .process-track > .steps {
+    position: sticky;
+    top: 88px;
+    height: calc(100svh - 88px);
+    align-items: stretch;
+  }
+  .reference-scroll .process-track .steps article {
+    opacity: 1;
+    padding-top: clamp(32px, 7svh, 70px);
+    clip-path: inset(0 calc((1 - var(--step-reveal, 0)) * 100%) 0 0);
+    transform: translateX(calc((1 - var(--step-reveal, 0)) * 48px));
+    transition: none;
+    border-top-color: var(--accent);
+  }
+  .reference-scroll .process-track .steps article:first-child {
+    --step-reveal: 1;
+  }
+  .reference-scroll .steps h3 {
+    font-size: clamp(18px, 1.5vw, 23px);
+  }
+  .reference-scroll .steps p {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .reference-scroll .steps article::before {
+    display: none;
+  }
+}
+@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
+  .reference-scroll .overlap-panel {
+    padding-top: 42px;
+  }
+  .reference-scroll .services .service-visual,
+  .reference-scroll .services .service-visual.is-plan .service-preview {
+    background: #1b1d18;
   }
 }
