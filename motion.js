@@ -286,7 +286,7 @@
     const sequence = selection.querySelector(".selected-sequence");
     const grid = selection.querySelector(".selected-grid");
     const panels = [...sequence.querySelectorAll(".selected-panel")];
-    const desktop = matchMedia("(min-width: 1000px) and (min-height: 650px)");
+    const desktop = matchMedia("(min-width: 1000px)");
     let active = -1;
     let frame = 0;
     const update = () => {
@@ -698,7 +698,7 @@
   process.append(stage);
   const articles = [...stage.querySelectorAll(".steps article")];
   const eligible = matchMedia(
-    "(min-width: 1000px) and (min-height: 750px) and (prefers-reduced-motion: no-preference)",
+    "(min-width: 1000px) and (prefers-reduced-motion: no-preference)",
   );
   let frame = 0;
   function update() {

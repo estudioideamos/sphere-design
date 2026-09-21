@@ -4247,7 +4247,7 @@ button:focus-visible .ui-arrow {
 .selected-sequence[hidden] {
   display: none;
 }
-@media (min-width: 1000px) and (min-height: 650px) {
+@media (min-width: 1000px) {
   .selected-sequence {
     height: 340svh;
   }
@@ -4255,7 +4255,7 @@ button:focus-visible .ui-arrow {
     position: sticky;
     top: 88px;
     height: calc(100svh - 110px);
-    min-height: 510px;
+    min-height: 0;
     overflow: hidden;
   }
   .selected-panel {
@@ -4361,7 +4361,7 @@ button:focus-visible .ui-arrow {
   -webkit-touch-callout: none;
   user-select: none;
 }
-@media (min-width: 1000px) and (min-height: 750px) and (prefers-reduced-motion: no-preference) {
+@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
   .process.is-journey {
     min-height: 190svh;
   }
@@ -4400,5 +4400,44 @@ button:focus-visible .ui-arrow {
   }
   .process.is-journey .steps article.is-current h3 {
     color: var(--accent);
+  }
+}
+
+/* Decorative numbering is removed; retain generous readable text spacing. */
+.faq summary {
+  grid-template-columns: minmax(0, 1fr) 42px;
+}
+.faq .faq-answer {
+  padding-left: 23px;
+}
+@media (max-width: 700px) {
+  .faq summary {
+    grid-template-columns: minmax(0, 1fr) 34px;
+  }
+}
+@media (min-width: 1000px) and (max-height: 750px) {
+  .process.is-journey .process-stage {
+    top: 94px;
+  }
+  .process.is-journey .section-heading {
+    margin-bottom: 30px;
+  }
+  .process.is-journey .section-heading h2 {
+    font-size: clamp(30px, 3.5vw, 44px);
+  }
+  .process.is-journey .section-heading > p {
+    margin-top: 12px;
+  }
+  .process.is-journey .steps article {
+    padding-top: 16px;
+    padding-right: 16px;
+  }
+  .process.is-journey .steps h3 {
+    margin: 16px 0 10px;
+    font-size: 17px;
+  }
+  .process.is-journey .step-visual .editorial-icon {
+    width: 32px;
+    height: 32px;
   }
 }

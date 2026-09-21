@@ -80,13 +80,13 @@ export function addJournal(pages, { picture, eyebrow, link, cta }) {
     },
   ];
   const card = (p, i) =>
-    `<a class="journal-card" href="${p.slug}.html"><div class="journal-image">${picture(p.image, p.title)}<span aria-hidden="true">↗</span></div><div class="journal-meta"><span>${p.category}</span><span>0${i + 1} / Journal</span></div><h2>${p.title}</h2><p>${p.intro}</p><span class="journal-read">Read story <span aria-hidden="true">↗</span></span></a>`;
+    `<a class="journal-card" href="${p.slug}.html"><div class="journal-image">${picture(p.image, p.title)}<span aria-hidden="true">↗</span></div><div class="journal-meta"><span>${p.category}</span></div><h2>${p.title}</h2><p>${p.intro}</p><span class="journal-read">Read story <span aria-hidden="true">↗</span></span></a>`;
   pages["insights.html"] = {
     title: "Insights — The Sphere Perspective",
     active: "Insights",
     description:
       "Ideas on architectural visualization, light, materials and immersive experiences.",
-    body: `<section class="page-title wrap">${eyebrow("INSIGHTS", "THE SPHERE PERSPECTIVE")}<h1>Ideas behind<br><em>the image.</em></h1><div class="title-bottom"><p>Notes on architecture, atmosphere<br>and the art of seeing what comes next.</p></div></section><section class="journal wrap" aria-label="Journal articles"><div class="journal-label"><span>THE JOURNAL — 01 / 03</span><span>Sample editorial content</span></div><div class="journal-grid">${posts.map(card).join("")}</div></section>${cta()}`,
+    body: `<section class="page-title wrap">${eyebrow("INSIGHTS", "THE SPHERE PERSPECTIVE")}<h1>Ideas behind<br><em>the image.</em></h1><div class="title-bottom"><p>Notes on architecture, atmosphere<br>and the art of seeing what comes next.</p></div></section><section class="journal wrap" aria-label="Journal articles"><div class="journal-label"><span>THE JOURNAL</span><span>Sample editorial content</span></div><div class="journal-grid">${posts.map(card).join("")}</div></section>${cta()}`,
   };
   posts.forEach((p, i) => {
     const next = posts[(i + 1) % posts.length];
@@ -94,7 +94,7 @@ export function addJournal(pages, { picture, eyebrow, link, cta }) {
       title: p.title,
       active: "Insights",
       description: p.intro,
-      body: `<article class="journal-article"><header class="article-heading wrap">${link("insights.html", "All insights")}<p class="eyebrow">${p.category} / 2 MIN READ</p><h1>${p.title}</h1><p class="article-deck">${p.intro}</p><p class="sample-note">Sample editorial · Demo edition</p></header><figure class="article-cover wrap">${picture(p.image, p.title)}<figcaption>Sphere Design / A study in architectural visualization</figcaption></figure><div class="article-layout wrap"><aside><span class="eyebrow">IN THIS STORY</span><ol>${p.sections.map(([h], j) => `<li><a href="#section-${j + 1}">${h}</a></li>`).join("")}</ol></aside><div class="article-copy">${p.sections.map(([h, t], j) => `<section id="section-${j + 1}"><span class="article-number">0${j + 1}</span><h2>${h}</h2><p>${t}</p></section>`).join("")}<div class="article-next"><span class="eyebrow">NEXT PERSPECTIVE</span><a href="${next.slug}.html">${next.title}<span aria-hidden="true">↗</span></a></div></div></div></article>${cta()}`,
+      body: `<article class="journal-article"><header class="article-heading wrap">${link("insights.html", "All insights")}<p class="eyebrow">${p.category} / 2 MIN READ</p><h1>${p.title}</h1><p class="article-deck">${p.intro}</p><p class="sample-note">Sample editorial · Demo edition</p></header><figure class="article-cover wrap">${picture(p.image, p.title)}<figcaption>Sphere Design / A study in architectural visualization</figcaption></figure><div class="article-layout wrap"><aside><span class="eyebrow">IN THIS STORY</span><ol>${p.sections.map(([h], j) => `<li><a href="#section-${j + 1}">${h}</a></li>`).join("")}</ol></aside><div class="article-copy">${p.sections.map(([h, t], j) => `<section id="section-${j + 1}"><h2>${h}</h2><p>${t}</p></section>`).join("")}<div class="article-next"><span class="eyebrow">NEXT PERSPECTIVE</span><a href="${next.slug}.html">${next.title}<span aria-hidden="true">↗</span></a></div></div></div></article>${cta()}`,
     };
   });
 }
