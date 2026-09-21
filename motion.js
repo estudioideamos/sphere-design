@@ -803,7 +803,13 @@
   preview.className = 'industry-hover-preview';
   preview.setAttribute('aria-hidden', 'true');
   const img = document.createElement('img'); img.alt = ''; preview.append(img); document.body.append(preview);
-  const sources = ['assets/interior1.webp','assets/exterior2.webp','assets/portfolio/item-001.webp'];
+  const sources = ['assets/interior1-sm.webp','assets/exterior2-sm.webp','assets/portfolio/item-001-sm.webp'];
+  const warm = new IntersectionObserver(entries => {
+    if (!allowed.matches || !entries.some(e => e.isIntersecting)) return;
+    sources.forEach(src => { const asset = new Image(); asset.src = src; });
+    warm.disconnect();
+  }, { rootMargin: '500px' });
+  warm.observe(links[0].parentElement);
   let ticket = 0;
   function position(x,y) {
     const size = preview.offsetWidth;
