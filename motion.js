@@ -763,3 +763,64 @@
   document.fonts.ready.then(configure);
   configure();
 })();
+
+// Ease mouse-wheel steps while retaining native touch, trackpad and nested scrolling.
+(() => {
+  const allowed = matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
+  let frame = 0, target = scrollY, last = 0;
+  const stop = () => { cancelAnimationFrame(frame); frame = 0; target = scrollY; document.documentElement.classList.remove('wheel-gliding'); };
+  function tick(time) {
+    const dt = Math.min(40, time - last || 16); last = time;
+    target = Math.max(0, Math.min(target, document.documentElement.scrollHeight - innerHeight));
+    const next = scrollY + (target - scrollY) * (1 - Math.exp(-dt / 85));
+    scrollTo(0, Math.abs(target - next) < .8 ? target : next);
+    if (Math.abs(target - scrollY) > 1) frame = requestAnimationFrame(tick); else stop();
+  }
+  addEventListener('wheel', e => {
+    if (!allowed.matches || e.ctrlKey || e.metaKey || e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    if (e.target.closest('input,textarea,select,[role="dialog"],.editorial-menu.open,.modal.open')) { stop(); return; }
+    for (let el = e.target; el && el !== document.body; el = el.parentElement) {
+      if (/(auto|scroll)/.test(getComputedStyle(el).overflowY) && el.scrollHeight > el.clientHeight + 1) { stop(); return; }
+    }
+    if (e.deltaMode === 0 && (Math.abs(e.deltaY) < 40 || !Number.isInteger(e.deltaY))) { stop(); return; }
+    if (!e.cancelable) return;
+    e.preventDefault();
+    if (!frame) target = scrollY;
+    target += e.deltaY * (e.deltaMode === 1 ? 20 : e.deltaMode === 2 ? innerHeight : 1);
+    document.documentElement.classList.add('wheel-gliding');
+    if (!frame) { last = performance.now(); frame = requestAnimationFrame(tick); }
+  }, { passive: false });
+  ['pointerdown','keydown','touchstart','blur'].forEach(name => addEventListener(name, stop, { passive: true }));
+  allowed.addEventListener('change', stop);
+})();
+
+// Portfolio imagery follows the industry link without intercepting its action.
+(() => {
+  const links = [...document.querySelectorAll('.industry-list > a')];
+  if (!links.length) return;
+  const allowed = matchMedia('(hover: hover) and (pointer: fine)');
+  const preview = document.createElement('div');
+  preview.className = 'industry-hover-preview';
+  preview.setAttribute('aria-hidden', 'true');
+  const img = document.createElement('img'); img.alt = ''; preview.append(img); document.body.append(preview);
+  const sources = ['assets/interior1.webp','assets/exterior2.webp','assets/portfolio/item-001.webp'];
+  let ticket = 0;
+  function position(x,y) {
+    const size = preview.offsetWidth;
+    preview.style.left = `${Math.max(16, Math.min(innerWidth-size-16,x+28))}px`;
+    preview.style.top = `${Math.max(92, Math.min(innerHeight-size-16,y-size*.5))}px`;
+  }
+  const hide = () => { ticket++; preview.classList.remove('visible'); };
+  links.forEach((link,i) => {
+    const show = async e => {
+      if (!allowed.matches) return;
+      const current = ++ticket; const asset = new Image(); asset.src = sources[i];
+      const r = link.getBoundingClientRect(); position(e.clientX || r.right-260,e.clientY || r.top+r.height/2);
+      try { await asset.decode(); } catch { return; }
+      if(current!==ticket)return; img.src=asset.src; preview.classList.add('visible');
+    };
+    link.addEventListener('pointerenter',show); link.addEventListener('pointermove',e=>position(e.clientX,e.clientY));
+    link.addEventListener('pointerleave',hide); link.addEventListener('focus',show); link.addEventListener('blur',hide);
+  });
+  addEventListener('blur',hide); allowed.addEventListener('change',hide);
+})();
