@@ -1,0 +1,406 @@
+const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+const menu = document.querySelector(".menu-toggle"),
+  nav = document.querySelector("#navigation");
+const menuBackground = [
+  ...document.querySelectorAll(
+    "main,footer,.header-links,.header-cta,.site-header>.brand",
+  ),
+];
+function closeMenu() {
+  if (menu.getAttribute("aria-expanded") !== "true") return;
+  menu.setAttribute("aria-expanded", "false");
+  menu.setAttribute("aria-label", "Open navigation");
+  menu.querySelector(".menu-word").textContent = "Menu";
+  nav.classList.remove("open");
+  nav.setAttribute("aria-hidden", "true");
+  nav.inert = true;
+  document.body.classList.remove("menu-open");
+  if (!document.querySelector("dialog[open]"))
+    document.body.classList.remove("locked");
+  menuBackground.forEach((el) => (el.inert = false));
+  menu.focus({ preventScroll: true });
+}
+menu.addEventListener("click", () => {
+  if (menu.getAttribute("aria-expanded") === "true") {
+    closeMenu();
+    return;
+  }
+  menu.setAttribute("aria-expanded", "true");
+  menu.setAttribute("aria-label", "Close navigation");
+  menu.querySelector(".menu-word").textContent = "Close";
+  nav.inert = false;
+  nav.setAttribute("aria-hidden", "false");
+  nav.classList.add("open");
+  document.body.classList.add("locked", "menu-open");
+  menuBackground.forEach((el) => (el.inert = true));
+  nav.querySelector(".menu-links a").focus({ preventScroll: true });
+});
+document.addEventListener("keydown", (e) => {
+  if (!nav.classList.contains("open")) return;
+  if (e.key === "Escape") {
+    e.preventDefault();
+    closeMenu();
+  }
+  if (e.key === "Tab") {
+    const links = [...nav.querySelectorAll("a,button"), menu];
+    if (e.shiftKey && document.activeElement === links[0]) {
+      e.preventDefault();
+      menu.focus();
+    } else if (!e.shiftKey && document.activeElement === menu) {
+      e.preventDefault();
+      links[0].focus();
+    } else if (
+      !e.shiftKey &&
+      document.activeElement === links[links.length - 2]
+    ) {
+      e.preventDefault();
+      menu.focus();
+    } else if (e.shiftKey && document.activeElement === menu) {
+      e.preventDefault();
+      links[links.length - 2].focus();
+    }
+  }
+});
+nav
+  .querySelectorAll("a")
+  .forEach((a) => a.addEventListener("click", closeMenu));
+addEventListener("pageshow", closeMenu);
+const hero = document.querySelector("#hero-video");
+if (hero) {
+  const loadFilm = () => {
+    const s = hero.querySelector("source");
+    if (!s.src) {
+      s.src = matchMedia("(max-width: 700px)").matches
+        ? SPHERE.assets + "hero-mobile.mp4?v=20260921"
+        : s.dataset.src;
+      hero.load();
+    }
+  };
+  if (
+    !reduce.matches &&
+    !navigator.connection?.saveData &&
+    !["slow-2g", "2g"].includes(navigator.connection?.effectiveType)
+  ) {
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        loadFilm();
+        if (!document.body.classList.contains("background-motion-paused"))
+          hero.play().catch(() => {});
+      }, 500);
+    });
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) hero.pause();
+  });
+  new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting) hero.pause();
+  }).observe(hero);
+}
+const filterButtons = [...document.querySelectorAll("[data-filter]")],
+  cards = [...document.querySelectorAll("[data-project]")];
+const more = document.querySelector(".portfolio-more");
+let activeCategory = "All",
+  visibleLimit = 12;
+function renderPortfolio() {
+  const matching = cards.filter(
+    (c) => activeCategory === "All" || c.dataset.category === activeCategory,
+  );
+  const visible = new Set(matching.slice(0, visibleLimit));
+  cards.forEach((c) => {
+    c.hidden = !visible.has(c);
+    if (!c.hidden) c.classList.add("visible");
+  });
+  document.querySelector(".result-count").textContent =
+    `Showing ${Math.min(visibleLimit, matching.length)} of ${matching.length} visual experiences`;
+  more.hidden = visibleLimit >= matching.length;
+  return matching;
+}
+function filter(category) {
+  activeCategory = filterButtons.some((b) => b.dataset.filter === category)
+    ? category
+    : "All";
+  visibleLimit = 12;
+  filterButtons.forEach((b) =>
+    b.setAttribute("aria-pressed", String(b.dataset.filter === activeCategory)),
+  );
+  renderPortfolio();
+  const url = new URL(location.href);
+  if (activeCategory === "All") url.searchParams.delete("category");
+  else url.searchParams.set("category", activeCategory);
+  history.replaceState(null, "", url);
+}
+more?.addEventListener("click", () => {
+  const next = visibleLimit;
+  visibleLimit += 12;
+  const matching = renderPortfolio();
+  matching[next]?.focus({ preventScroll: true });
+});
+filterButtons.forEach((b) =>
+  b.addEventListener("click", () => filter(b.dataset.filter)),
+);
+if (filterButtons.length)
+  filter(new URLSearchParams(location.search).get("category") || "All");
+const dialog = document.querySelector(".lightbox"),
+  media = dialog.querySelector(".modal-media"),
+  caption = dialog.querySelector(".modal-caption p");
+let current = 0,
+  opener,
+  dispose;
+function clean() {
+  if (dispose) {
+    dispose();
+    dispose = null;
+  }
+  media.querySelector("video")?.pause();
+  media.replaceChildren();
+}
+function show(index) {
+  current = index;
+  clean();
+  caption.textContent = "Loading…";
+  try {
+    const card = cards.find((c) => Number(c.dataset.project) === index);
+    if (!card?.dataset.asset) throw Error("Project unavailable");
+    const p = [
+      card.dataset.asset,
+      card.dataset.category,
+      card.querySelector("h3").textContent,
+      card.querySelector("img").alt,
+    ];
+    caption.textContent = p[2] + " — " + p[1];
+    if (
+      p[1] === "Animations" &&
+      /^[A-Za-z0-9_-]{11}$/.test(card.dataset.youtube || "")
+    ) {
+      const frame = document.createElement("iframe");
+      frame.className = "film-embed";
+      frame.title = `${p[2]} — architectural film`;
+      frame.src = `https://www.youtube-nocookie.com/embed/${card.dataset.youtube}?autoplay=1&rel=0&playsinline=1`;
+      frame.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+      frame.allowFullscreen = true;
+      frame.referrerPolicy = "strict-origin-when-cross-origin";
+      media.append(frame);
+      const watch = document.createElement("a");
+      watch.href = `https://www.youtube.com/watch?v=${card.dataset.youtube}`;
+      watch.target = "_blank";
+      watch.rel = "noopener noreferrer";
+      watch.textContent = "Watch on YouTube ↗";
+      caption.replaceChildren(document.createTextNode(p[2] + " · "), watch);
+    } else if (p[1] === "Animations") {
+      caption.textContent = "This film will be available soon.";
+    } else if (p[1] === "VR 360°") {
+      dispose = panorama(
+        media,
+        card.dataset.full ||
+          (p[0].startsWith("portfolio/")
+            ? SPHERE.assets + "" + p[0] + "-xl.webp"
+            : SPHERE.assets + "vr.webp"),
+      );
+    } else {
+      const img = new Image();
+      img.src =
+        card.dataset.full ||
+        SPHERE.assets +
+          "" +
+          p[0] +
+          (p[0].startsWith("portfolio/") ? "-xl" : "") +
+          ".webp";
+      img.alt = p[3];
+      img.addEventListener("error", () => {
+        caption.textContent =
+          "This image could not load. Close and reopen it to retry.";
+      });
+      media.append(img);
+    }
+  } catch {
+    caption.textContent =
+      "This project could not load. Close and reopen it to retry.";
+  }
+}
+cards.forEach((c) =>
+  c.addEventListener("click", () => {
+    opener = c;
+    dialog.showModal();
+    document.body.classList.add("locked");
+    show(Number(c.dataset.project));
+    dialog.querySelector(".modal-close").focus();
+  }),
+);
+function closeViewer() {
+  dialog.close();
+}
+dialog.querySelector(".modal-close").addEventListener("click", closeViewer);
+dialog.addEventListener("close", () => {
+  clean();
+  document.body.classList.remove("locked");
+  opener?.focus();
+});
+function step(dir) {
+  const visible = cards
+    .filter((c) => !c.hidden)
+    .map((c) => Number(c.dataset.project));
+  show(
+    visible[(visible.indexOf(current) + dir + visible.length) % visible.length],
+  );
+}
+dialog.querySelector(".previous").addEventListener("click", () => step(-1));
+dialog.querySelector(".next").addEventListener("click", () => step(1));
+dialog.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") step(1);
+  if (e.key === "ArrowLeft") step(-1);
+});
+function panorama(container, url) {
+  const wrap = document.createElement("div");
+  wrap.className = "pano";
+  const canvas = document.createElement("canvas");
+  canvas.setAttribute(
+    "aria-label",
+    "360 degree panorama. Drag to look around, use arrow keys to rotate.",
+  );
+  canvas.tabIndex = 0;
+  const help = document.createElement("div");
+  help.className = "pano-help";
+  help.textContent = "Drag to explore · Arrow keys to look around";
+  wrap.append(canvas, help);
+  container.append(wrap);
+  const gl = canvas.getContext("webgl");
+  if (!gl) {
+    wrap.textContent = "360° view requires WebGL. ";
+    const a = document.createElement("a");
+    a.href = url;
+    a.textContent = "Open panoramic image ↗";
+    wrap.append(a);
+    return () => {};
+  }
+  const vs =
+    "attribute vec2 p;varying vec2 uv;void main(){uv=p;gl_Position=vec4(p,0.,1.);}";
+  const frag =
+    "precision mediump float;varying vec2 uv;uniform sampler2D tex;uniform float yaw;uniform float pitch;uniform float aspect;void main(){vec3 d=normalize(vec3(uv.x*aspect,-uv.y,1.3));float cp=cos(pitch),sp=sin(pitch);d=vec3(d.x,d.y*cp-d.z*sp,d.y*sp+d.z*cp);float cy=cos(yaw),sy=sin(yaw);d=vec3(d.x*cy+d.z*sy,d.y,-d.x*sy+d.z*cy);vec2 t=vec2(atan(d.x,d.z)/6.2831853+0.5,asin(clamp(d.y,-1.,1.))/3.14159265+0.5);gl_FragColor=texture2D(tex,t);}";
+  function shader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram(),
+    vert = shader(gl.VERTEX_SHADER, vs),
+    pixel = shader(gl.FRAGMENT_SHADER, frag);
+  gl.attachShader(prog, vert);
+  gl.attachShader(prog, pixel);
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
+    gl.STATIC_DRAW,
+  );
+  const p = gl.getAttribLocation(prog, "p");
+  gl.enableVertexAttribArray(p);
+  gl.vertexAttribPointer(p, 2, gl.FLOAT, false, 0, 0);
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  let yaw = 0,
+    pitch = 0,
+    ready = false,
+    dead = false;
+  const yloc = gl.getUniformLocation(prog, "yaw"),
+    ploc = gl.getUniformLocation(prog, "pitch"),
+    aloc = gl.getUniformLocation(prog, "aspect");
+  function draw() {
+    if (!ready || dead) return;
+    canvas.width = canvas.clientWidth * Math.min(devicePixelRatio, 1.5);
+    canvas.height = canvas.clientHeight * Math.min(devicePixelRatio, 1.5);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.uniform1f(yloc, yaw);
+    gl.uniform1f(ploc, pitch);
+    gl.uniform1f(aloc, canvas.width / canvas.height);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  const img = new Image();
+  img.onload = () => {
+    if (dead) return;
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+    ready = true;
+    draw();
+  };
+  img.onerror = () =>
+    (help.textContent = "Panorama could not load. Please reopen the viewer.");
+  img.src = url;
+  let pointer = null;
+  canvas.addEventListener("pointerdown", (e) => {
+    pointer = [e.clientX, e.clientY];
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener("pointermove", (e) => {
+    if (!pointer) return;
+    yaw -= (e.clientX - pointer[0]) * 0.005;
+    pitch = Math.max(
+      -1.3,
+      Math.min(1.3, pitch + (e.clientY - pointer[1]) * 0.005),
+    );
+    pointer = [e.clientX, e.clientY];
+    draw();
+  });
+  canvas.addEventListener("pointerup", () => (pointer = null));
+  canvas.addEventListener("pointercancel", () => (pointer = null));
+  canvas.addEventListener("keydown", (e) => {
+    if (!e.key.startsWith("Arrow")) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.key === "ArrowLeft") yaw -= 0.12;
+    if (e.key === "ArrowRight") yaw += 0.12;
+    if (e.key === "ArrowUp") pitch = Math.max(-1.3, pitch - 0.12);
+    if (e.key === "ArrowDown") pitch = Math.min(1.3, pitch + 0.12);
+    draw();
+  });
+  window.addEventListener("resize", draw);
+  return () => {
+    dead = true;
+    window.removeEventListener("resize", draw);
+    gl.deleteTexture(tex);
+    gl.deleteBuffer(buf);
+    gl.deleteProgram(prog);
+    gl.deleteShader(vert);
+    gl.deleteShader(pixel);
+  };
+}
+const form = document.querySelector("#contact-form");
+// Discourage casual saving without blocking page navigation or text selection.
+for (const event of ["contextmenu", "dragstart"]) {
+  document.addEventListener(event, (e) => {
+    if (
+      e.target.closest(".project-image, .modal-media img, .modal-media canvas")
+    )
+      e.preventDefault();
+  });
+}
+
+// Account for object-fit cropping, not just card width, when choosing responsive media.
+(() => {
+  const images = [...document.querySelectorAll(".project-image img[srcset]")];
+  const selectSize = (img) => {
+    const width = img.clientWidth,
+      height = img.clientHeight;
+    if (!width || !height) return;
+    const ratio =
+      Number(img.getAttribute("width")) / Number(img.getAttribute("height")) ||
+      img.naturalWidth / img.naturalHeight;
+    if (!Number.isFinite(ratio) || ratio <= 0) return;
+    const pixels = Math.ceil(Math.max(width, height * ratio) * 1.06);
+    const sizes = `${pixels}px`;
+    if (img.sizes !== sizes) img.sizes = sizes;
+  };
+  const observer = new ResizeObserver((entries) =>
+    entries.forEach(({ target }) => selectSize(target)),
+  );
+  images.forEach((img) => {
+    observer.observe(img);
+    img.addEventListener("load", () => selectSize(img));
+    selectSize(img);
+  });
+})();
