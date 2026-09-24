@@ -42,7 +42,7 @@ document.addEventListener("keydown", (e) => {
     closeMenu();
   }
   if (e.key === "Tab") {
-    const links = [...nav.querySelectorAll("a"), menu];
+    const links = [...nav.querySelectorAll("a,button"), menu];
     if (e.shiftKey && document.activeElement === links[0]) {
       e.preventDefault();
       menu.focus();
@@ -78,6 +78,7 @@ if (hero) {
     }
   };
   function state() {
+    if (!film) return;
     film.innerHTML = hero.paused
       ? '<svg class="playback-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 3.5 12 8l-7 4.5Z"/></svg> <span>Play film</span>'
       : '<svg class="playback-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="4" y="3" width="2.5" height="10" rx=".5"/><rect x="9.5" y="3" width="2.5" height="10" rx=".5"/></svg> <span>Pause film</span>';
@@ -86,7 +87,7 @@ if (hero) {
       hero.paused ? "Play background film" : "Pause background film",
     );
   }
-  film.addEventListener("click", () => {
+  film?.addEventListener("click", () => {
     loadFilm();
     if (hero.paused) hero.play().catch(() => {});
     else hero.pause();
@@ -101,7 +102,7 @@ if (hero) {
     window.addEventListener("load", () => {
       setTimeout(() => {
         loadFilm();
-        hero.play().catch(state);
+        if (!document.body.classList.contains("background-motion-paused")) hero.play().catch(state);
       }, 500);
     });
   }
@@ -403,12 +404,12 @@ form?.addEventListener("submit", (e) => {
   const d = new FormData(form);
   const body = `Name: ${d.get("name")}\nEmail: ${d.get("email")}\nCompany: ${d.get("company")}\nService: ${d.get("service")}\n\n${d.get("message")}`;
   location.href =
-    "mailto:info@studiospheredesign.com?subject=" +
+    "mailto:info@thespheredesign.com?subject=" +
     encodeURIComponent("Project inquiry — " + d.get("name")) +
     "&body=" +
     encodeURIComponent(body);
   document.querySelector("#form-status").textContent =
-    "Your inquiry is ready in your email app. Review it and send it there. If no app opened, email info@studiospheredesign.com.";
+    "Your inquiry is ready in your email app. Review it and send it there. If no app opened, email info@thespheredesign.com.";
 });
 
 // Discourage casual saving without blocking page navigation or text selection.

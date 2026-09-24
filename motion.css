@@ -4553,3 +4553,29 @@ html.wheel-gliding { scroll-behavior: auto !important; }
   .reference-scroll .selected-sequence { height: calc(340svh + max(600px, 100svh)); }
   .reference-scroll .hero-following { margin-top: max(240px, 50svh); }
 }
+/* September client feedback: preserve complete render compositions. */
+.service-visual > picture img, .service-visual > img, .service-visual .service-preview {
+  object-fit: contain;
+  transform: none !important;
+  background: #1b1d18;
+}
+.industry-hover-preview img { object-fit: contain; }
+.contact-phone { display: block; margin-top: 12px; }
+.menu-phone { display: block; margin-top: 5px; font-size: 12px; letter-spacing: 0; }
+.article-cover img { width: 100%; height: auto; object-fit: contain; }
+.article-copy p + p { margin-top: 20px; }
+@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
+  .reference-scroll .process-track { height: calc(var(--process-content-height, 310px) + max(520px, 85svh) + max(480px, 80svh)); }
+  .reference-scroll .process { padding-bottom: 24px; }
+}
+.selected-sectors { display: flex; flex-wrap: wrap; gap: 12px 22px; margin: -25px 0 36px; font-size: 13px; color: var(--accent); }
+.selected-sectors a { border-bottom: 1px solid transparent; padding-bottom: 5px; }
+.selected-sectors a:hover { border-color: currentColor; }
+@media(max-width:700px) { .selected-sectors { margin: 0 0 28px; gap: 12px 18px; } }
+.background-motion-toggle { display: block; background: transparent; color: var(--muted); border: 0; border-bottom: 1px solid var(--line); padding: 8px 0; margin-top: 4px; font: inherit; font-size: 11px; letter-spacing: 0; cursor: pointer; }
+@media (max-width: 700px) and (max-height: 620px) {
+ .menu-layout { padding-top: 82px; padding-bottom: 12px; gap: 10px; }
+ .menu-title, .menu-links > a[aria-current] .menu-title { font-size: 28px; }
+ .menu-links > a { min-height: 38px; padding-block: 3px; }
+ .menu-bottom { gap: 8px; padding-top: 8px; }
+}

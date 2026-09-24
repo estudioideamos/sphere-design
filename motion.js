@@ -207,7 +207,7 @@
     serviceVisual.append(film);
     const images = [
       "hero-poster.webp?v=20260921",
-      "portfolio/item-023.webp",
+      "portfolio/item-022.webp",
       "exterior2-xl.webp",
       "vr.webp",
       "floorplan.webp",
@@ -228,6 +228,7 @@
     const play = () => {
       if (
         active !== 0 ||
+        document.body.classList.contains("background-motion-paused") ||
         !canMove() ||
         document.hidden ||
         navigator.connection?.saveData
@@ -427,6 +428,7 @@
   marquees.forEach((el) => {
     observer.observe(el);
     const button = el.querySelector(".marquee-toggle");
+    if (!button) return;
     const label = button.getAttribute("aria-label").replace(/^Pause /, "");
     button.addEventListener("click", () => {
       const paused = el.classList.toggle("user-paused");
@@ -728,8 +730,8 @@
   function update() {
     scheduled = 0;
     if (!eligible.matches) return;
-    // Reserve a full viewport of scrolling after the last column is revealed.
-    const readingHold = Math.max(600, innerHeight);
+    // Reserve reading space after the last column is revealed.
+    const readingHold = Math.max(480, innerHeight * .8);
     const distance = Math.max(1, track.offsetHeight - steps.offsetHeight - readingHold);
     const progress = clamp((88 - track.getBoundingClientRect().top) / distance);
     articles.forEach((article, i) => {
@@ -741,6 +743,7 @@
   }
   function configure() {
     document.body.classList.toggle("reference-scroll", eligible.matches);
+    track.style.setProperty("--process-content-height", `${steps.offsetHeight}px`);
     if (hero) hero.style.setProperty("--hero-overflow", `${Math.max(0, hero.offsetHeight - innerHeight)}px`);
     pairs.forEach(({ previous }) =>
       previous.style.setProperty(
@@ -809,7 +812,7 @@
   preview.className = 'industry-hover-preview';
   preview.setAttribute('aria-hidden', 'true');
   const img = document.createElement('img'); img.alt = ''; preview.append(img); document.body.append(preview);
-  const sources = ['assets/interior1-sm.webp','assets/exterior2-sm.webp','assets/portfolio/item-001-sm.webp'];
+  const sources = ['assets/portfolio/item-014-sm.webp','assets/portfolio/item-020-sm.webp','assets/portfolio/item-001-sm.webp'];
   const warm = new IntersectionObserver(entries => {
     if (!allowed.matches || !entries.some(e => e.isIntersecting)) return;
     sources.forEach(src => { const asset = new Image(); asset.src = src; });
@@ -835,4 +838,19 @@
     link.addEventListener('pointerleave',hide); link.addEventListener('focus',show); link.addEventListener('blur',hide);
   });
   addEventListener('blur',hide); allowed.addEventListener('change',hide);
+})();
+
+// One discreet background-motion control, available from the navigation.
+(() => {
+ const button = document.querySelector('.background-motion-toggle');
+ button?.addEventListener('click', () => {
+  const paused = document.body.classList.toggle('background-motion-paused');
+  button.setAttribute('aria-pressed', String(paused));
+  button.textContent = paused ? 'Resume background motion' : 'Pause background motion';
+  document.querySelectorAll('.marquee-section').forEach(el => el.classList.toggle('user-paused', paused));
+  document.querySelectorAll('.hero video,.service-film').forEach(video => {
+   if (paused) video.pause();
+   else if (!matchMedia('(prefers-reduced-motion: reduce)').matches && video.getBoundingClientRect().bottom > 0 && video.getBoundingClientRect().top < innerHeight) video.play().catch(() => {});
+  });
+ });
 })();

@@ -25,7 +25,7 @@ for (const file of files) {
     JSON.parse(m[1]);
   for (const m of html.matchAll(/(?:src|href)="([^"#]+)"/g)) {
     const ref = m[1];
-    if (/^(https?:|mailto:|data:)/.test(ref)) continue;
+    if (/^(https?:|mailto:|tel:|data:)/.test(ref)) continue;
     const local = ref.split(/[?#]/)[0];
     assert.ok(
       fs.existsSync(path.resolve(root, local)),

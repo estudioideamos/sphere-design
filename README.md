@@ -15,7 +15,7 @@ Use Node.js 24 or newer. No npm packages are required to build or run the websit
 - `build.mjs`: page composition and build output.
 - `render.mjs`: shared HTML document, metadata and content security policy.
 - `portfolio-data.json`: the complete supplied portfolio, its categories and source provenance.
-- `journal.mjs`: three clearly labeled sample editorial articles.
+- `journal.mjs`: three client-supplied editorial articles.
 - `icons.mjs`: the custom service/process icon family.
 - `style.css`, `motion.css`: base design, responsive layouts and interaction styling.
 - `app.js`, `motion.js`: navigation, gallery, panorama, filters and optional motion.
@@ -33,7 +33,7 @@ Fonts are self-hosted WOFF2 with swap rendering and bundled OFL licenses. The si
 
 Pages render complete HTML at build time. Each has a unique title and description, canonical URL, social preview metadata and JSON-LD. The build emits `sitemap.xml`, `robots.txt` and `llms.txt`. The latter is a reading aid, not a promise of AI inclusion or ranking. Pages are indexable by default; set `INDEXABLE=false` for a private-review deployment. Set `SITE_URL` when deploying to the final domain so canonical URLs and the sitemap use that domain.
 
-The three Insights posts are original demonstration content, visibly identified as samples. They were not provided by the client. Contact information comes from supplied materials. No client results, ratings or project locations are invented.
+The three Insights posts and their hero images were supplied by the client on September 23, 2026. Internal SEO implementation notes are excluded from published article copy. Existing article URLs are retained so shared demo links keep working. Contact information comes from supplied materials. No client results, ratings or project locations are invented.
 
 ## Security and delivery
 
@@ -47,8 +47,8 @@ GitHub Pages controls HTTP response headers; this repository cannot set headers 
 
 ## Ownership and credits
 
-Only authorized public-facing media is included. Client briefs, original source documents and full-resolution working files are not published. Sphere branding, photography and renders remain the property of their owners. Social brand icons come from Simple Icons v11 (CC0). Fonts include their licenses. Site credits link to https://ideamos.com.ar and use the studio's official logo.
+Only authorized public-facing media is included. Client briefs, original source documents and full-resolution working files are not published. Sphere branding, photography and renders remain the property of their owners. Social brand icons come from Simple Icons v11 (CC0). Fonts include their licenses.
 
 ## Remaining client content
 
-The phone number is awaiting client confirmation. The Insights Drive folder was empty on September 21; the three labeled sample posts remain until the first real article is supplied. This static demo has no content-management login. Self-service article publishing requires an agreed CMS/editor workflow; editing journal.mjs and rebuilding is the current technical workflow. Image context menus and dragging are disabled in portfolio media as a casual deterrent, not download protection. Ideamos credits remain at the site owner’s explicit request.
+The confirmed phone is +1 (786) 884-4880 and the corrected email is info@thespheredesign.com. The September 22 feedback and three supplied Insights are incorporated. This static demo has no content-management login. Self-service article publishing requires an agreed CMS/editor workflow; editing journal.mjs and rebuilding is the current technical workflow. Image context menus and dragging are disabled in portfolio media as a casual deterrent, not download protection. The footer credit row was removed following the latest client instruction.

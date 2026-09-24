@@ -13,7 +13,7 @@ export function renderPage({ file, page, base, nav, footer, modal, versions }) {
     "light-and-material.html",
     "beyond-the-frame.html",
   ].includes(file);
-  const cover = new URL("assets/og-sphere.jpg", base).href;
+  const cover = new URL(page.cover || "assets/og-sphere.jpg", base).href;
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -23,7 +23,8 @@ export function renderPage({ file, page, base, nav, footer, modal, versions }) {
         name: "Sphere Design",
         url: base,
         logo: new URL("assets/logo.png", base).href,
-        email: "info@studiospheredesign.com",
+        email: "info@thespheredesign.com",
+        telephone: "+1-786-884-4880",
         sameAs: [
           "https://www.instagram.com/thespheredesign/",
           "https://www.linkedin.com/company/studiospheredesign/",
@@ -47,7 +48,8 @@ export function renderPage({ file, page, base, nav, footer, modal, versions }) {
         "@id": url + "#page",
         url,
         name: page.title,
-        headline: page.title,
+        headline: page.headline || page.title,
+        ...(article ? { author: { "@id": base + "#organization" }, datePublished: "2026-09-24", dateModified: "2026-09-24" } : {}),
         description: page.description,
         inLanguage: "en",
         isPartOf: { "@id": base + "#website" },
