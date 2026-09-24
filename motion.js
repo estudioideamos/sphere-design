@@ -723,7 +723,13 @@
   const track = document.createElement("div");
   track.className = "process-track";
   steps.before(track);
-  track.append(steps);
+  const scene = document.createElement("div");
+  scene.className = "process-scene";
+  track.append(scene);
+  scene.append(steps);
+  const why = document.querySelector(".why");
+  const whyAnchor = document.createComment("Why Sphere original position");
+  why?.before(whyAnchor);
   const articles = [...steps.children];
   let scheduled = 0;
   const clamp = (v) => Math.min(1, Math.max(0, v));
@@ -732,7 +738,7 @@
     if (!eligible.matches) return;
     // Reserve reading space after the last column is revealed.
     const readingHold = Math.max(480, innerHeight * .8);
-    const distance = Math.max(1, track.offsetHeight - steps.offsetHeight - readingHold);
+    const distance = Math.max(1, track.offsetHeight - scene.offsetHeight - readingHold);
     const progress = clamp((88 - track.getBoundingClientRect().top) / distance);
     articles.forEach((article, i) => {
       const reveal =
@@ -743,7 +749,11 @@
   }
   function configure() {
     document.body.classList.toggle("reference-scroll", eligible.matches);
-    track.style.setProperty("--process-content-height", `${steps.offsetHeight}px`);
+    if (why) {
+      if (eligible.matches) scene.append(why);
+      else whyAnchor.after(why);
+    }
+    track.style.setProperty("--process-content-height", `${scene.offsetHeight}px`);
     if (hero) hero.style.setProperty("--hero-overflow", `${Math.max(0, hero.offsetHeight - innerHeight)}px`);
     pairs.forEach(({ previous }) =>
       previous.style.setProperty(

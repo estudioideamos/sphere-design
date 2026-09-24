@@ -4579,3 +4579,11 @@ html.wheel-gliding { scroll-behavior: auto !important; }
  .menu-links > a { min-height: 38px; padding-block: 3px; }
  .menu-bottom { gap: 8px; padding-top: 8px; }
 }
+
+/* Pin the process and its following section together, keeping their gap constant. */
+@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
+  .reference-scroll .process { padding-bottom: 0; }
+  .reference-scroll .process-scene { position: sticky; top: 88px; }
+  .reference-scroll .process-track .process-scene > .steps { position: static; }
+  .reference-scroll .process-scene > .why { width: 100%; max-width: none; margin-top: 54px; }
+}
