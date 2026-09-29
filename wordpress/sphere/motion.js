@@ -765,23 +765,23 @@
       if (eligible.matches) scene.append(why);
       else whyAnchor.after(why);
     }
-    track.style.setProperty(
-      "--process-content-height",
-      `${scene.offsetHeight}px`,
-    );
-    if (hero)
-      hero.style.setProperty(
-        "--hero-overflow",
-        `${Math.max(0, hero.offsetHeight - innerHeight)}px`,
-      );
-    pairs.forEach(({ previous }) =>
-      previous.style.setProperty(
-        "--underlay-overflow",
-        `${Math.max(0, previous.offsetHeight - innerHeight + 88)}px`,
-      ),
-    );
-    if (!eligible.matches)
+    if (!eligible.matches) {
       articles.forEach((a) => a.style.removeProperty("--step-reveal"));
+      return;
+    }
+    // Read dimensions together before writing styles to avoid repeated layouts.
+    const contentHeight = scene.offsetHeight;
+    const heroOverflow = hero
+      ? Math.max(0, hero.offsetHeight - innerHeight)
+      : 0;
+    const overflow = pairs.map(({ previous }) =>
+      Math.max(0, previous.offsetHeight - innerHeight + 88),
+    );
+    track.style.setProperty("--process-content-height", `${contentHeight}px`);
+    if (hero) hero.style.setProperty("--hero-overflow", `${heroOverflow}px`);
+    pairs.forEach(({ previous }, i) =>
+      previous.style.setProperty("--underlay-overflow", `${overflow[i]}px`),
+    );
     update();
   }
   addEventListener(

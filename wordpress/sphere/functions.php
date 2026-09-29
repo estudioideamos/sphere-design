@@ -38,6 +38,7 @@ add_action("wp_enqueue_scripts", function () {
         "window.SPHERE=" .
             wp_json_encode([
                 "assets" => $uri . "/assets/",
+                "optimized" => $uri . "/optimized/",
                 "contact" => rest_url("sphere/v1/contact"),
                 "nonce" => wp_create_nonce("sphere_contact"),
             ]) .
@@ -47,6 +48,63 @@ add_action("wp_enqueue_scripts", function () {
 });
 function sphere_markup($html)
 {
+    // Preserve original full-size gallery media while serving appropriately sized previews.
+    $uri = get_template_directory_uri();
+    foreach (["interior2", "exterior2", "interior1", "hospitality"] as $asset) {
+        $html = preg_replace_callback(
+            '~<img\b[^>]*src="(?:[^" ]*/)?assets/' . $asset . '\.webp"[^>]*>~',
+            function ($match) use ($asset, $uri) {
+                $tag = new WP_HTML_Tag_Processor($match[0]);
+                if ($tag->next_tag("IMG")) {
+                    $tag->set_attribute(
+                        "src",
+                        $uri . "/optimized/" . $asset . "-1200.webp",
+                    );
+                    $tag->set_attribute(
+                        "srcset",
+                        $uri .
+                            "/optimized/" .
+                            $asset .
+                            "-720.webp 720w, " .
+                            $uri .
+                            "/optimized/" .
+                            $asset .
+                            "-1200.webp 1200w, " .
+                            $uri .
+                            "/optimized/" .
+                            $asset .
+                            "-1800.webp 1800w, " .
+                            $uri .
+                            "/assets/" .
+                            $asset .
+                            "-xl.webp 2880w",
+                    );
+                    $tag->set_attribute("decoding", "async");
+                }
+                return $tag->get_updated_html();
+            },
+            $html,
+        );
+    }
+    if (str_contains($html, 'id="hero-video"')) {
+        $picture =
+            '<picture class="hero-poster"><source media="(max-width:700px)" srcset="' .
+            esc_url($uri . "/optimized/hero-mobile-poster.webp") .
+            '"><img src="' .
+            esc_url($uri . "/assets/hero-poster.webp?v=20260921") .
+            '" alt="" width="1920" height="1080" fetchpriority="high" decoding="async"></picture>';
+        $html = str_replace(
+            '<div class="hero-media">',
+            '<div class="hero-media">' . $picture,
+            $html,
+        );
+        $html = preg_replace(
+            '~(id="hero-video"[^>]*?) poster="[^"]*"~',
+            '$1',
+            $html,
+        );
+    }
+
     if (function_exists("sphere_site_info")) {
         foreach (sphere_site_defaults() as $key => $value) {
             $replacement = sphere_site_info($key);
