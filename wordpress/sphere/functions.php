@@ -130,7 +130,7 @@ function sphere_markup($html)
                 esc_url(admin_url("admin-post.php")) .
                 '"><input type="hidden" name="action" value="sphere_contact"><input type="hidden" name="nonce" value="' .
                 esc_attr(wp_create_nonce("sphere_contact")) .
-                '"><label class="sphere-honeypot" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>',
+                '"><input type="hidden" name="form_ticket" value="' . esc_attr(sphere_form_ticket()) . '"><label class="sphere-honeypot" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>',
             $html,
         );
         $html = str_replace(

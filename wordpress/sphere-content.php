@@ -82,7 +82,7 @@ add_action("rest_api_init", function () {
 function sphere_contact(WP_REST_Request $r)
 {
     // Reject malformed payloads before they reach PHP/WordPress string functions.
-    foreach (["nonce", "name", "email", "message", "service", "company", "website"] as $field) {
+    foreach (["nonce", "name", "email", "message", "service", "company", "website", "form_ticket"] as $field) {
         $value = $r->get_param($field);
         if ($value !== null && (!is_string($value) || strlen($value) > 12000)) {
             return new WP_Error("invalid", "Please check the form fields and try again.", ["status" => 400]);
@@ -120,6 +120,8 @@ function sphere_contact(WP_REST_Request $r)
             ["status" => 400],
         );
     }
+    $guard = sphere_antispam_check($r, $email, $message);
+    if (is_wp_error($guard)) { return $guard; }
     $key =
         "sphere_contact_" .
         hash_hmac("sha256", $_SERVER["REMOTE_ADDR"] ?? "", wp_salt());
@@ -146,6 +148,7 @@ function sphere_contact(WP_REST_Request $r)
             ["status" => 503],
         );
     }
+    set_transient($guard, true, 10 * MINUTE_IN_SECONDS);
     return rest_ensure_response([
         "message" =>
             "Thank you. Your inquiry has been submitted. We will be in touch.",
