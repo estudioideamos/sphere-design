@@ -29,9 +29,10 @@ jobs:
         run: find wordpress -name '*.php' -print0 | xargs -0 -n1 php -l
       - name: Prepare release
         run: |
-          mkdir -p release/theme release/mu-plugins
+          mkdir -p release/theme release/mu-plugins release/plugins
           rsync -a --exclude=seed.json wordpress/sphere/ release/theme/
           cp wordpress/sphere-*.php wordpress/sphere-*.css wordpress/sphere-*.js release/mu-plugins/
+          rsync -a wordpress/plugins/ release/plugins/
           tar -czf release.tar.gz -C release .
       - name: Configure SSH
         env:
