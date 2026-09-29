@@ -16,7 +16,7 @@ add_action("after_setup_theme", function () {
 add_action("wp_enqueue_scripts", function () {
     $dir = get_template_directory();
     $uri = get_template_directory_uri();
-    foreach (["design", "motion", "wordpress"] as $s) {
+    foreach (file_exists($dir . "/generated/site.css") ? ["generated/site"] : ["design", "motion", "wordpress"] as $s) {
         wp_enqueue_style(
             "sphere-" . $s,
             $uri . "/" . $s . ".css",
@@ -25,11 +25,12 @@ add_action("wp_enqueue_scripts", function () {
         );
     }
     foreach (["app", "motion", "contact"] as $s) {
+        $asset = file_exists($dir . "/generated/" . $s . ".js") ? "generated/" . $s : $s;
         wp_enqueue_script(
             "sphere-" . $s,
-            $uri . "/" . $s . ".js",
+            $uri . "/" . $asset . ".js",
             $s === "app" ? [] : ["sphere-app"],
-            filemtime($dir . "/" . $s . ".js"),
+            filemtime($dir . "/" . $asset . ".js"),
             ["strategy" => "defer", "in_footer" => true],
         );
     }

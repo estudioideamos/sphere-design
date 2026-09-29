@@ -9,7 +9,7 @@ const menuBackground = [
 function closeMenu() {
   if (menu.getAttribute("aria-expanded") !== "true") return;
   menu.setAttribute("aria-expanded", "false");
-  menu.setAttribute("aria-label", "Open navigation");
+  menu.setAttribute("aria-label", "Open menu");
   menu.querySelector(".menu-word").textContent = "Menu";
   nav.classList.remove("open");
   nav.setAttribute("aria-hidden", "true");
@@ -26,7 +26,7 @@ menu.addEventListener("click", () => {
     return;
   }
   menu.setAttribute("aria-expanded", "true");
-  menu.setAttribute("aria-label", "Close navigation");
+  menu.setAttribute("aria-label", "Close menu");
   menu.querySelector(".menu-word").textContent = "Close";
   nav.inert = false;
   nav.setAttribute("aria-hidden", "false");
@@ -380,27 +380,35 @@ for (const event of ["contextmenu", "dragstart"]) {
   });
 }
 
-// Account for object-fit cropping, not just card width, when choosing responsive media.
+// Use ResizeObserver dimensions instead of synchronous layout reads for responsive media.
 (() => {
   const images = [...document.querySelectorAll(".project-image img[srcset]")];
-  const selectSize = (img) => {
-    const width = img.clientWidth,
-      height = img.clientHeight;
-    if (!width || !height) return;
-    const ratio =
-      Number(img.getAttribute("width")) / Number(img.getAttribute("height")) ||
-      img.naturalWidth / img.naturalHeight;
-    if (!Number.isFinite(ratio) || ratio <= 0) return;
-    const pixels = Math.ceil(Math.max(width, height * ratio) * 1.06);
-    const sizes = `${pixels}px`;
-    if (img.sizes !== sizes) img.sizes = sizes;
+  const boxes = new WeakMap();
+  const pending = new Set();
+  let frame = 0;
+  const schedule = (img) => {
+    pending.add(img);
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      const updates = [];
+      pending.forEach((image) => {
+        const box = boxes.get(image);
+        if (!box?.width || !box.height) return;
+        const ratio = Number(image.getAttribute("width")) / Number(image.getAttribute("height")) || image.naturalWidth / image.naturalHeight;
+        if (!Number.isFinite(ratio) || ratio <= 0) return;
+        updates.push([image, `${Math.ceil(Math.max(box.width, box.height * ratio) * 1.06)}px`]);
+      });
+      pending.clear();
+      updates.forEach(([image, sizes]) => { if (image.sizes !== sizes) image.sizes = sizes; });
+    });
   };
-  const observer = new ResizeObserver((entries) =>
-    entries.forEach(({ target }) => selectSize(target)),
-  );
+  const observer = new ResizeObserver((entries) => entries.forEach(({target, contentRect}) => {
+    boxes.set(target, contentRect);
+    schedule(target);
+  }));
   images.forEach((img) => {
     observer.observe(img);
-    img.addEventListener("load", () => selectSize(img));
-    selectSize(img);
+    img.addEventListener("load", () => schedule(img));
   });
 })();

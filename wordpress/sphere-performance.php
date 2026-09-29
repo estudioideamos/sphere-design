@@ -11,9 +11,9 @@ function sphere_invalidate_public_cache()
         "shutdown",
         function () {
             if (has_action("litespeed_purge_all")) {
-                    do_action("litespeed_purge_all");
-                }
-                if (function_exists("wp_cache_clear_cache")) {
+                do_action("litespeed_purge_all");
+            }
+            if (function_exists("wp_cache_clear_cache")) {
                 wp_cache_clear_cache();
             }
         },

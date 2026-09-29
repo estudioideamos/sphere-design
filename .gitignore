@@ -4,3 +4,5 @@ dist/
 work-assets/
 .npm-cache/
 *.log
+
+wordpress/sphere/generated/
