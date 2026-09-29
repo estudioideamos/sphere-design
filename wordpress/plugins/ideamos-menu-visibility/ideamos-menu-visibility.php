@@ -36,12 +36,12 @@ final class Ideamos_Menu_Visibility {
     static function filter_menu() {
         global $menu, $submenu;
         foreach ((array) $menu as $item) {
-            if (empty($item[0]) || empty($item[2]) || $item[2] === self::PAGE || strpos($item[2], 'separator') === 0) { continue; }
+            if (!current_user_can($item[1]) || empty($item[0]) || empty($item[2]) || $item[2] === self::PAGE || strpos($item[2], 'separator') === 0) { continue; }
             $slug = (string) $item[2];
             $key = self::key('', $slug);
             self::$catalog[$key] = ['parent' => '', 'slug' => $slug, 'label' => self::label($item[0])];
             foreach ($submenu[$slug] ?? [] as $child) {
-                if (empty($child[0]) || empty($child[2]) || $child[2] === self::PAGE) { continue; }
+                if (!current_user_can($child[1]) || empty($child[0]) || empty($child[2]) || $child[2] === self::PAGE) { continue; }
                 self::$catalog[self::key($slug, $child[2])] = ['parent' => $slug, 'slug' => (string) $child[2], 'label' => self::label($child[0])];
             }
         }
@@ -76,7 +76,7 @@ final class Ideamos_Menu_Visibility {
         <aside class="imv-info"><strong>Siempre podés volver.</strong> “Visibilidad del menú” permanece disponible para administradores, aunque ocultes Ajustes o Plugins. Este plugin organiza el menú: los enlaces directos y los permisos de WordPress siguen funcionando. Para impedir accesos, se necesitan permisos por rol.</aside>
         <div class="imv-actions"><button class="button button-primary button-hero" type="submit">Guardar visibilidad</button><button class="button button-secondary" type="submit" name="reset" value="1">Restaurar todo visible</button></div>
         </form></div>
-        <style>.imv{max-width:1120px;color:#24302a}.imv-head{padding:30px 34px;background:#1c2923;border-radius:14px;color:#fff;margin:24px 0}.imv-head span{font-size:11px;letter-spacing:1.8px;color:#d1ddbf}.imv-head h1{color:#fff;font-size:34px;line-height:1.2;margin:14px 0;padding:0}.imv-head p{font-size:16px;color:#e2e9e0}.imv-card{background:#fff;border:1px solid #dce2dc;border-radius:12px;padding:26px;margin:20px 0}.imv h2{font-size:20px;margin:0 0 10px}.imv p{line-height:1.6}.imv-roles{display:flex;gap:16px;flex-wrap:wrap;margin-top:18px}.imv-roles label{background:#f0f4ee;padding:10px 14px;border-radius:6px}.imv-enabled{display:block;font-weight:600;margin-top:18px}.imv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:22px}.imv-group{border:1px solid #dae2d8;border-radius:9px;overflow:hidden;padding-bottom:10px}.imv-parent{display:block;background:#f0f4ee;font-weight:600;padding:15px}.imv-child{display:block;padding:9px 15px 5px 30px;line-height:1.5}.imv input:focus-visible{outline:3px solid #2271b1;outline-offset:3px}.imv-info{background:#eaf0e5;border-left:4px solid #65784e;padding:20px;line-height:1.7}.imv-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:22px 0 35px}@media(max-width:600px){.imv-head,.imv-card{padding:20px}.imv-grid{grid-template-columns:1fr}}</style>
+        <style>.imv{max-width:1120px;color:#24302a}.imv-head{padding:30px 34px;background:#1c2923;border-radius:14px;color:#fff;margin:24px 0}.imv-head span{font-size:11px;letter-spacing:1.8px;color:#d1ddbf}.imv-head h1{color:#fff;font-size:34px;line-height:1.2;margin:14px 0;padding:0}.imv .notice p{color:#24302a}.imv-head p{font-size:16px;color:#e2e9e0}.imv-card{background:#fff;border:1px solid #dce2dc;border-radius:12px;padding:26px;margin:20px 0}.imv h2{font-size:20px;margin:0 0 10px}.imv p{line-height:1.6}.imv-roles{display:flex;gap:16px;flex-wrap:wrap;margin-top:18px}.imv-roles label{background:#f0f4ee;padding:10px 14px;border-radius:6px}.imv-enabled{display:block;font-weight:600;margin-top:18px}.imv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:22px}.imv-group{border:1px solid #dae2d8;border-radius:9px;overflow:hidden;padding-bottom:10px}.imv-parent{display:block;background:#f0f4ee;font-weight:600;padding:15px}.imv-child{display:block;padding:9px 15px 5px 30px;line-height:1.5}.imv input:focus-visible{outline:3px solid #2271b1;outline-offset:3px}.imv-info{background:#eaf0e5;border-left:4px solid #65784e;padding:20px;line-height:1.7}.imv-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:22px 0 35px}@media(max-width:600px){.imv-head,.imv-card{padding:20px}.imv-grid{grid-template-columns:1fr}}</style>
         <?php
     }
     static function save() {
