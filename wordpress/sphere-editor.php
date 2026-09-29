@@ -192,3 +192,14 @@ add_action("admin_init", function () {
         exit();
     }
 });
+
+// Keep upload guidance visible both before and after selecting a featured image.
+add_filter('admin_post_thumbnail_html', function ($html, $post_id) {
+    $type = get_post_type($post_id);
+    if (!in_array($type, ['post', 'sphere_project'], true)) { return $html; }
+    $details = $type === 'post'
+        ? '<li><strong>Dimensiones:</strong> horizontal, de 1600 a 2000 px de ancho. Por ejemplo: 1920 × 1080 px.</li><li><strong>Peso recomendado:</strong> entre 200 y 600 KB.</li>'
+        : '<li><strong>Dimensiones:</strong> 2400–2880 px en el lado mayor, conservando la proporción original. Para VR 360°: 4096 × 2048 px.</li><li><strong>Peso recomendado:</strong> menos de 1 MB.</li>';
+    $notice = '<div class="sphere-featured-image-guide" style="background:#f0f4ee;border:1px solid #d3dfcc;border-left:3px solid #536945;border-radius:6px;padding:12px;margin:4px 0 14px;color:#263321;font-size:12px;line-height:1.6"><strong style="font-size:13px">Cómo preparar esta imagen</strong><ul style="padding-left:16px;margin:8px 0;list-style:disc"><li><strong>Formato:</strong> WebP recomendado; también JPG/JPEG. PNG solo si necesitás transparencia.</li>' . $details . '<li><strong>Límite de carga:</strong> 3 MB y hasta 4096 px por lado.</li></ul><p style="margin:8px 0 0;font-size:12px">No agrandes imágenes pequeñas. Dejá margen alrededor del contenido importante: las miniaturas pueden recortarse. Completá el texto alternativo al elegir la imagen.</p></div>';
+    return $notice . $html;
+}, 10, 2);
