@@ -1,4 +1,6 @@
-(() => {
+(async () => {
+  // Yield between independent modules so input and painting stay responsive.
+  await (globalThis.scheduler?.yield ? scheduler.yield() : new Promise(resolve => setTimeout(resolve, 0)));
   "use strict";
   const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
   const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
@@ -79,6 +81,7 @@
     clockTimer = setInterval(tick, 60000);
   }
 
+  await (globalThis.scheduler?.yield ? scheduler.yield() : new Promise(resolve => setTimeout(resolve, 0)));
   // Keep scroll work to visible images; schedule only when input changes.
   const activeImages = new Set();
   const imageObserver = new IntersectionObserver(
@@ -189,6 +192,7 @@
     el.addEventListener("pointerleave", () => (el.style.translate = "0px 0px"));
   });
 
+  await (globalThis.scheduler?.yield ? scheduler.yield() : new Promise(resolve => setTimeout(resolve, 0)));
   // Service previews share supplied portfolio media; films load only on demand.
   const serviceVisual = document.querySelector(".service-visual");
   if (serviceVisual) {
@@ -282,6 +286,7 @@
     });
   }
 
+  await (globalThis.scheduler?.yield ? scheduler.yield() : new Promise(resolve => setTimeout(resolve, 0)));
   // Native scrolling drives the paired gallery; mobile keeps the full-width list.
   const selection = document.querySelector(".selected");
   if (selection) {
@@ -370,6 +375,7 @@
     }),
   );
 
+  await (globalThis.scheduler?.yield ? scheduler.yield() : new Promise(resolve => setTimeout(resolve, 0)));
   // Animate the native accordion without losing keyboard or no-JS behavior.
   document.querySelectorAll(".faq details").forEach((details) => {
     const summary = details.querySelector("summary");
@@ -411,7 +417,9 @@
 })();
 
 // Continuous type runs only on screen, with hover, keyboard and manual pause.
-(() => {
+(async () => {
+  // Yield between independent modules so input and painting stay responsive.
+  await (globalThis.scheduler?.yield ? scheduler.yield() : new Promise(resolve => setTimeout(resolve, 0)));
   const preference = matchMedia("(prefers-reduced-motion: reduce)");
   const marquees = [...document.querySelectorAll(".marquee-section")];
   const visible = new Set();
@@ -465,7 +473,9 @@
 })();
 
 // Compare intrinsic column heights after media and fonts settle.
-(() => {
+(async () => {
+  // Yield between independent modules so input and painting stay responsive.
+  await (globalThis.scheduler?.yield ? scheduler.yield() : new Promise(resolve => setTimeout(resolve, 0)));
   const groups = [
     ...document.querySelectorAll(
       ".intro, .service-layout, .industries, .faq, .contact-layout, .insights-feature, .team-note, .team-grid",
@@ -508,7 +518,9 @@
   schedule();
 })();
 
-(() => {
+(async () => {
+  // Yield between independent modules so input and painting stay responsive.
+  await (globalThis.scheduler?.yield ? scheduler.yield() : new Promise(resolve => setTimeout(resolve, 0)));
   const preference = matchMedia("(prefers-reduced-motion: reduce)");
   const menu = document.querySelector(".editorial-menu");
   const preview = menu.querySelector(".menu-art-frame>img");
@@ -598,7 +610,9 @@
 })();
 
 // Animate only while the pointer is moving; stop the frame loop at rest.
-(() => {
+(async () => {
+  // Yield between independent modules so input and painting stay responsive.
+  await (globalThis.scheduler?.yield ? scheduler.yield() : new Promise(resolve => setTimeout(resolve, 0)));
   const fine = matchMedia("(hover: hover) and (pointer: fine)");
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
   const body = document.body;
@@ -695,7 +709,9 @@
 })();
 
 // Reference interaction: incoming surfaces cover pinned preceding sections.
-(() => {
+(async () => {
+  // Yield between independent modules so input and painting stay responsive.
+  await (globalThis.scheduler?.yield ? scheduler.yield() : new Promise(resolve => setTimeout(resolve, 0)));
   const eligible = matchMedia(
     "(min-width: 1000px) and (prefers-reduced-motion: no-preference)",
   );
@@ -799,7 +815,9 @@
 })();
 
 // Ease mouse-wheel steps while retaining native touch, trackpad and nested scrolling.
-(() => {
+(async () => {
+  // Yield between independent modules so input and painting stay responsive.
+  await (globalThis.scheduler?.yield ? scheduler.yield() : new Promise(resolve => setTimeout(resolve, 0)));
   const allowed = matchMedia(
     "(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)",
   );
@@ -889,7 +907,9 @@
 })();
 
 // Portfolio imagery follows the industry link without intercepting its action.
-(() => {
+(async () => {
+  // Yield between independent modules so input and painting stay responsive.
+  await (globalThis.scheduler?.yield ? scheduler.yield() : new Promise(resolve => setTimeout(resolve, 0)));
   const links = [...document.querySelectorAll(".industry-list > a")];
   if (!links.length) return;
   const allowed = matchMedia("(hover: hover) and (pointer: fine)");
@@ -955,7 +975,9 @@
 })();
 
 // One discreet background-motion control, available from the navigation.
-(() => {
+(async () => {
+  // Yield between independent modules so input and painting stay responsive.
+  await (globalThis.scheduler?.yield ? scheduler.yield() : new Promise(resolve => setTimeout(resolve, 0)));
   const button = document.querySelector(".background-motion-toggle");
   button?.addEventListener("click", () => {
     const paused = document.body.classList.toggle("background-motion-paused");

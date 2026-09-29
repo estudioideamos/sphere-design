@@ -81,6 +81,13 @@ add_action("rest_api_init", function () {
 });
 function sphere_contact(WP_REST_Request $r)
 {
+    // Reject malformed payloads before they reach PHP/WordPress string functions.
+    foreach (["nonce", "name", "email", "message", "service", "company", "website"] as $field) {
+        $value = $r->get_param($field);
+        if ($value !== null && (!is_string($value) || strlen($value) > 12000)) {
+            return new WP_Error("invalid", "Please check the form fields and try again.", ["status" => 400]);
+        }
+    }
     if (!wp_verify_nonce($r->get_param("nonce"), "sphere_contact")) {
         return new WP_Error(
             "expired",
@@ -102,6 +109,8 @@ function sphere_contact(WP_REST_Request $r)
         !$message ||
         !$service ||
         strlen($message) > 12000 ||
+        strlen($email) > 254 ||
+        strlen($service) > 200 ||
         strlen($name) > 200 ||
         strlen($company) > 300
     ) {
@@ -130,6 +139,7 @@ function sphere_contact(WP_REST_Request $r)
         ["Reply-To: " . $email],
     );
     if (!$ok) {
+        error_log("Sphere security: contact_delivery_failed");
         return new WP_Error(
             "mail",
             "Your inquiry could not be sent. Please use the contact email displayed on this page.",
